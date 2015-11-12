@@ -11,7 +11,7 @@ process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration/StandardSequences/MagneticField_AutoFromDBCurrent_cff')
 process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 
-process.load("L1Trigger.L1Ntuples.l1ExtraTreeProducer_cfi")
+process.load("L1Trigger.L1TNtuple.l1ExtraTreeProducer_cfi")
 
 # output file
 process.TFileService = cms.Service("TFileService",
@@ -19,9 +19,9 @@ process.TFileService = cms.Service("TFileService",
 )
 
 # L1 ntuple producers
-## process.load("L1Trigger.L1Ntuples.l1NtupleProducer_cfi")
-import L1Trigger.L1Ntuples.l1NtupleProducerNano_cfi 
-process.l1NtupleProducer = L1Trigger.L1Ntuples.l1NtupleProducerNano_cfi.l1NtupleProducer.clone()
+## process.load("L1Trigger.L1TNtuple.l1NtupleProducer_cfi")
+import L1Trigger.L1TNtuple.l1NtupleProducerNano_cfi 
+process.l1NtupleProducer = L1Trigger.L1TNtuple.l1NtupleProducerNano_cfi.l1NtupleProducer.clone()
 
 process.p = cms.Path(
     process.l1NtupleProducer

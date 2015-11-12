@@ -130,9 +130,9 @@ options.parseArguments()
 
 #L1 ntuple
 if options.useStage2:
-	from L1Trigger.L1Ntuples.l1Ntuple_stage2_cfg import *
+	from L1Trigger.L1TNtuple.l1Ntuple_stage2_cfg import *
 else:
-	from L1Trigger.L1Ntuples.l1Ntuple_cfg import *
+	from L1Trigger.L1TNtuple.l1Ntuple_cfg import *
 
 if options.runOnMC and hasattr(process,'l1NtupleProducer') :
     print "[L1Menu]: Running on MC reading also PileUpSummary info"
