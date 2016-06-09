@@ -62,10 +62,8 @@ public:
    // setters
   void addConstituent( DetId id ) { constituents_.push_back( id ); }
   void addConstituents( const std::vector<DetId>& ids );
-#ifdef 0
-  void setConstituents( std::vector<DetId>&& ids ) { constituents_=std::move(ids);}
 //Currently causes problems with ROOT: rvalue references not handled correctly, and setConstituents is only used in the CaloTower creation algorithm, so I don't need it
-#endif
+//  void setConstituents( std::vector<DetId>&& ids ) { constituents_=std::move(ids);}
   void setEcalTime(int t) { ecalTime_ = t; };
   void setHcalTime(int t) { hcalTime_ = t; };
   void setHcalSubdet(int lastHB, int lastHE, int lastHF, int lastHO) {
