@@ -2,5 +2,9 @@ __init__.py
 *.pyc
 .*.swp
 .#*
+*.root
 #*#
 *~
+**/DoubleMuonNtuplerRun2016B/
+*.tmp
+*.log
