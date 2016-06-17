@@ -63,7 +63,11 @@ public:
   void addConstituent( DetId id ) { constituents_.push_back( id ); }
   void addConstituents( const std::vector<DetId>& ids );
 //Currently causes problems with ROOT: rvalue references not handled correctly, and setConstituents is only used in the CaloTower creation algorithm, so I don't need it
-//  void setConstituents( std::vector<DetId>&& ids ) { constituents_=std::move(ids);}
+  void setConstituents( std::vector<DetId>&& ids ) { constituents_=std::move(ids);}
+//Added lvalue overload to try to make ROOT happy. Hopefully this will never get called, so just make it throw an exception. 
+  void setConstituents( std::vector<DetId>& ids ) {
+    throw cms::Exception("InvalidFunctionCall") << "The rvalue version of setConstituents should never be called." << std::endl << "This was just a hacky way to make something work." << std::endl;
+  }
   void setEcalTime(int t) { ecalTime_ = t; };
   void setHcalTime(int t) { hcalTime_ = t; };
   void setHcalSubdet(int lastHB, int lastHE, int lastHF, int lastHO) {

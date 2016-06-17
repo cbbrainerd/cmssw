@@ -1127,8 +1127,7 @@ void CaloTowersCreationAlgo::convert(const CaloTowerDetId& id, const MetaTower& 
       } // found higher E cell
 
     } // loop over matacontains
-throw 1;
-//    caloTower.setConstituents(std::move(contains));
+    caloTower.setConstituents(std::move(contains));
     caloTower.setHottestCellE(maxCellE);
 
     // std::cout << "CaloTowerVI " << nalgo << ' ' << caloTower.id() << ((inEcals[1]==1) ? "EE " : " " )  << caloTower.pt() << ' ' << caloTower.et() << ' ' << caloTower.mass() << ' '
