@@ -10,6 +10,8 @@
 #include <vector>
 #include <cmath>
 
+#include "FWCore/Utilities/interface/Exception.h"
+
 #include "DataFormats/GeometryVector/interface/GlobalPoint.h"
 
 /** \class CaloTower
