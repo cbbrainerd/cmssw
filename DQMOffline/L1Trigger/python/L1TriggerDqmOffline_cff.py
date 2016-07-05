@@ -11,7 +11,7 @@ import FWCore.ParameterSet.Config as cms
 #
 # V.M. Ghete - HEPHY Vienna - 2011-01-02 
 #                       
-                      
+ 
 
 #
 # DQM L1 Trigger in offline environment
@@ -24,6 +24,9 @@ dqmEnvL1T.subSystemFolder = 'L1T'
 # DQM online L1 Trigger modules, with offline configuration 
 from DQMOffline.L1Trigger.L1TMonitorOffline_cff import *
 from DQMOffline.L1Trigger.L1TMonitorClientOffline_cff import *
+
+#Upgrade configuration
+from DQM.L1TMonitor.L1TStage2_cff import *
 
 
 # DQM offline L1 Trigger versus Reco modules
@@ -130,8 +133,8 @@ eras.stage1L1Trigger.toModify(valStage1GtDigis, GctInputTag = 'caloStage1LegacyF
 # define sequences 
 #
 
-l1TriggerOnline = cms.Sequence(
-                               l1tMonitorStage1Online
+l1TriggerOnline = cms.Sequence(l1tStage2online 
+                               #l1tMonitorStage1Online
                                 * dqmEnvL1T
                                )
                                     
@@ -162,7 +165,7 @@ l1TriggerDqmOffline = cms.Sequence(
 
 # DQM Offline Step 2 sequence                                 
 l1TriggerDqmOfflineClient = cms.Sequence(
-                                l1tMonitorStage1Client
+                                l1tMonitorStage1Client #Needs to be upgraded obviously
                                 * l1EmulatorMonitorClient
                                 )
 
