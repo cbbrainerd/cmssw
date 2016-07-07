@@ -33,12 +33,10 @@ process.dqmSaver.tag = "BeamPixel"
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
 process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
-# Use this to run locally (for testing purposes)
-#process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
+process.load("DQM.Integration.config.FrontierCondition_GT_cfi")
+# Use this to run locally (for testing purposes), choose the right GT
 #from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, "74X_dataRun2_Prompt_v0", "")
-# Otherwise use this
-process.load("DQM.Integration.config.FrontierCondition_GT_cfi")
 
 
 #----------------------------
@@ -91,7 +89,7 @@ if (process.runType.getRunType() == process.runType.pp_run or process.runType.ge
                                             debugMode          = cms.bool(True),
                                             nLumiFit           = cms.uint32(2),
                                             maxLumiIntegration = cms.uint32(15),
-                                            nLumiXaxisRange    = cms.uint32(3000),
+                                            nLumiXaxisRange    = cms.uint32(5000),
                                             dataFromFit        = cms.bool(True),
                                             minNentries        = cms.uint32(20),
                                             # If the histogram has at least "minNentries" then extract Mean and RMS,
@@ -185,7 +183,7 @@ if (process.runType.getRunType() == process.runType.hi_run):
                                             debugMode          = cms.bool(True),
                                             nLumiFit           = cms.uint32(5),
                                             maxLumiIntegration = cms.uint32(15),
-                                            nLumiXaxisRange    = cms.uint32(3000),
+                                            nLumiXaxisRange    = cms.uint32(5000),
                                             dataFromFit        = cms.bool(True),
                                             minNentries        = cms.uint32(20),
                                             # If the histogram has at least "minNentries" then extract Mean and RMS,

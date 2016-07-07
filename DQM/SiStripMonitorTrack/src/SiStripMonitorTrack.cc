@@ -1,7 +1,7 @@
 #include <FWCore/MessageLogger/interface/MessageLogger.h>
 
+#include "Geometry/CommonDetUnit/interface/GluedGeomDet.h"
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
-#include "Geometry/TrackerGeometryBuilder/interface/GluedGeomDet.h"
 #include "Geometry/Records/interface/TrackerTopologyRcd.h"
 
 #include "CalibTracker/Records/interface/SiStripDetCablingRcd.h"
@@ -26,7 +26,7 @@ SiStripMonitorTrack::SiStripMonitorTrack(const edm::ParameterSet& conf):
   conf_(conf),
   tracksCollection_in_EventTree(true),
   firstEvent(-1),
-  genTriggerEventFlag_(new GenericTriggerEventFlag(conf, consumesCollector(), *this))
+  genTriggerEventFlag_(new GenericTriggerEventFlag(conf.getParameter<edm::ParameterSet>("genericTriggerEventPSet"), consumesCollector(), *this))
 {
   Cluster_src_   = conf.getParameter<edm::InputTag>("Cluster_src");
   Mod_On_        = conf.getParameter<bool>("Mod_On");
