@@ -22,8 +22,8 @@ dqmEnvL1T = DQMServices.Components.DQMEnvironment_cfi.dqmEnv.clone()
 dqmEnvL1T.subSystemFolder = 'L1T'
 
 # DQM online L1 Trigger modules, with offline configuration 
-from DQMOffline.L1Trigger.L1TMonitorOffline_cff import *
-from DQMOffline.L1Trigger.L1TMonitorClientOffline_cff import *
+#from DQMOffline.L1Trigger.L1TMonitorOffline_cff import *
+#from DQMOffline.L1Trigger.L1TMonitorClientOffline_cff import *
 
 #Upgrade configuration
 from DQM.L1TMonitor.L1TStage2_cff import *
@@ -44,14 +44,15 @@ dqmEnvL1TEMU = DQMServices.Components.DQMEnvironment_cfi.dqmEnv.clone()
 dqmEnvL1TEMU.subSystemFolder = 'L1TEMU'
 
 # DQM Offline Step 1 cfi/cff imports
-from DQMOffline.L1Trigger.L1TRate_Offline_cfi import *
-from DQMOffline.L1Trigger.L1TSync_Offline_cfi import *
-from DQMOffline.L1Trigger.L1TEmulatorMonitorOffline_cff import *  
-l1TdeRCT.rctSourceData = 'gctDigis'
+#from DQMOffline.L1Trigger.L1TRate_Offline_cfi import *
+#from DQMOffline.L1Trigger.L1TSync_Offline_cfi import *
+#from DQMOffline.L1Trigger.L1TEmulatorMonitorOffline_cff import *  
+#l1TdeRCT.rctSourceData = 'gctDigis'
 
 # DQM Offline Step 2 cfi/cff imports
-from DQMOffline.L1Trigger.L1TEmulatorMonitorClientOffline_cff import *
-from DQMOffline.L1Trigger.L1TEmulatorMonitorClientOffline_cff import *
+#from DQMOffline.L1Trigger.L1TEmulatorMonitorClientOffline_cff import *
+
+#Note: the stage 2 upgrade of the online configuration do not use L1TSync, L1TRate, or L1TMonitor (except for one part)
 
 
 ## Stage1 customization
@@ -155,29 +156,37 @@ l1TriggerOffline = cms.Sequence(
 #
  
 #The equivalent part of this in the online DQM doesn't appear to exist/have been changed
-l1TriggerEmulatorOnline = cms.Sequence(
-                                l1Stage1HwValEmulatorMonitor
-                                * dqmEnvL1TEMU
-                                )
+#l1TriggerEmulatorOnline = cms.Sequence(
+#                                l1Stage1HwValEmulatorMonitor
+#                                * dqmEnvL1TEMU
+#                                )
 
-l1TriggerEmulatorOffline = cms.Sequence(
-                                l1TriggerEmulatorOnline                                
-                                )
+#l1TriggerEmulatorOffline = cms.Sequence(
+#                                l1TriggerEmulatorOnline                                
+#                                )
 #
+
+from DQM.L1TMonitor.L1TMonitor_cff import *
 
 # DQM Offline Step 1 sequence
 l1TriggerDqmOffline = cms.Sequence(
                                 l1TriggerUnpacker*
                                 l1TriggerOffline
-                                * l1tRate_Offline
-                                * l1tSync_Offline
-                                * l1TriggerEmulatorOffline
+                                *dqmEnvL1T
+#                                * l1tRate_Offline #Unused in the stage2 online version...
+#                                * l1tSync_Offline
+#                                * l1TriggerEmulatorOffline (???)
                                 )                                  
+
+#from DQM.Integration.config.environment_cfi import *
+
 
 # DQM Offline Step 2 sequence                                 
 l1TriggerDqmOfflineClient = cms.Sequence(
-                                l1tMonitorStage1Client #Needs to be upgraded obviously(?)
-                                * l1EmulatorMonitorClient
+#                                l1tMonitorStage1Client #Needs to be upgraded obviously(?)
+#                                * l1EmulatorMonitorClient
+                                    l1tMonitorEndPathSeq
+                                    
                                 )
 
 
@@ -210,7 +219,11 @@ l1TriggerDqmOfflineClient = cms.Sequence(
 #
 #l1TriggerOnline.remove(l1tMonitorOnline)
 #
-l1tMonitorStage1Online.remove(bxTiming)
+
+
+# xx l1tMonitorStage1Online.remove(bxTiming)
+
+
 #l1tMonitorOnline.remove(l1tDttf)
 #l1tMonitorOnline.remove(l1tCsctf) 
 #l1tMonitorOnline.remove(l1tRpctf)
@@ -257,11 +270,15 @@ l1tMonitorStage1Online.remove(bxTiming)
 #l1TriggerClients.remove(l1tRpctfClient)
 #l1TriggerClients.remove(l1tGmtClient)
 #l1TriggerClients.remove(l1tOccupancyClient)
-l1TriggerStage1Clients.remove(l1tTestsSummary)
+
+
+# xx l1TriggerStage1Clients.remove(l1tTestsSummary)
+
+
 #l1TriggerClients.remove(l1tEventInfoClient)
                               
 # l1EmulatorMonitorClient sequence, defined in DQM/L1TMonitorClient/python/L1TEMUMonitorClient_cff.py
 #
 #l1EmulatorMonitorClient.remove(l1EmulatorQualityTests)
-l1EmulatorMonitorClient.remove(l1EmulatorErrorFlagClient)
+# xx l1EmulatorMonitorClient.remove(l1EmulatorErrorFlagClient)
 #l1EmulatorMonitorClient.remove(l1EmulatorEventInfoClient)
