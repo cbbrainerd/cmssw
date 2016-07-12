@@ -16,8 +16,10 @@ import FWCore.ParameterSet.Config as cms
 #
 # DQM L1 Trigger in offline environment
 #
-
+import DQM.EcalMonitorTasks.CollectionTags_cfi
 import DQMServices.Components.DQMEnvironment_cfi
+import EventFilter.HcalRawToDigi.HcalRawToDigi_cfi
+hcalRawToDigis=EventFilter.HcalRawToDigi.HcalRawToDigi_cfi.hcalDigis.clone()
 dqmEnvL1T = DQMServices.Components.DQMEnvironment_cfi.dqmEnv.clone()
 dqmEnvL1T.subSystemFolder = 'L1T'
 
@@ -138,9 +140,13 @@ from Configuration.StandardSequences.Eras import eras
 from Configuration.StandardSequences.RawToDigi_Data_cff import *
 
 l1TriggerUnpacker = cms.Sequence(
-                                 l1tCaloLayer1Digis
-                                 +BMTFStage2Digis
-                                 +emtfStage2Digis
+                                 l1tCaloLayer1Digis +
+                                 caloStage2Digis +
+                                 gmtStage2Digis +
+                                 gtStage2Digis +
+                                 BMTFStage2Digis +
+                                 emtfStage2Digis +
+                                 hcalRawToDigis
                                 )
 
 l1TriggerOnline = cms.Sequence(l1tStage2online 
@@ -162,9 +168,9 @@ l1TriggerOffline = cms.Sequence(
 #                                )
 
 #l1TriggerEmulatorOffline = cms.Sequence(
-#                                l1TriggerEmulatorOnline                                
+#                                l1TriggerEmulatorOnline                    
 #                                )
-#
+
 
 from DQM.L1TMonitor.L1TMonitor_cff import *
 
@@ -175,7 +181,7 @@ l1TriggerDqmOffline = cms.Sequence(
                                 *dqmEnvL1T
 #                                * l1tRate_Offline #Unused in the stage2 online version...
 #                                * l1tSync_Offline
-#                                * l1TriggerEmulatorOffline (???)
+#                                * l1TriggerEmulatorOffline
                                 )                                  
 
 #from DQM.Integration.config.environment_cfi import *
