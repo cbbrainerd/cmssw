@@ -1,0 +1,95 @@
+Log location: /uscms/home/cbrainer/nobackup/NTP_8_0_12/src/ntp/CaloViewNtpProducer/python/ConfFile_cfg.py.logs/ConfFile_cfg.py.logs-20160720152441.log
+Command run: "cmsRun ConfFile_cfg.py"
+---BEGIN CONFIGURATION FILE USED---
+import FWCore.ParameterSet.Config as cms
+
+process = cms.Process("ntupler")
+
+process.load("FWCore.MessageService.MessageLogger_cfi")
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+
+process.source = cms.Source("PoolSource",
+    # replace 'myfile.root' with the source file you want to use
+    fileNames = cms.untracked.vstring(
+#         '/store/data/Run2015E/HighPtLowerPhotons/MINIAOD/PromptReco-v1/000/261/397/00000/56F868BE-378E-E511-A87B-02163E01463E.root'
+#        'root://cmsxrootd.fnal.gov//store/data/Run2016B/DoubleMuon/RECO/PromptReco-v2/000/273/150/00000/381332BB-D919-E611-A3DC-02163E0144BF.root'
+        'root://cmsxrootd.fnal.gov//store/data/Run2015D/DoubleMuon/RECO/PromptReco-v3/000/256/629/00000/363822F8-F45E-E511-A5B5-02163E01431B.root'
+    )
+)
+
+
+process.ntptow=cms.EDProducer("CaloViewNtpProducer",
+    src=cms.InputTag("towerMaker"),
+    variables=cms.VPSet(
+        cms.PSet(tag=cms.untracked.string("Et"),
+            quantity=cms.untracked.string("et")),
+        cms.PSet(tag=cms.untracked.string("iEta"),
+            quantity=cms.untracked.string("ieta")),
+        cms.PSet(tag=cms.untracked.string("iPhi"),
+            quantity=cms.untracked.string("iphi")),
+        cms.PSet(tag=cms.untracked.string("EmEt"),
+            quantity=cms.untracked.string("emEt")),
+        cms.PSet(tag=cms.untracked.string("HadEt"),
+            quantity=cms.untracked.string("hadEt")),
+        cms.PSet(tag=cms.untracked.string("OuterEt"),
+            quantity=cms.untracked.string("outerEt")),
+        cms.PSet(tag=cms.untracked.string("EmLvl1"),
+            quantity=cms.untracked.string("emLvl1")),
+        cms.PSet(tag=cms.untracked.string("HadLvl1"),
+            quantity=cms.untracked.string("hadLv11"))
+    )
+)
+
+process.ntpmu=cms.EDProducer("CandViewNtpProducer",
+    src=cms.InputTag("towerMaker"),
+    variables=cms.VPSet(
+        cms.PSet(tag=cms.untracked.string("Pt"),
+            quantity=cms.untracked.string("pt")),
+        cms.PSet(tag=cms.untracked.string("Eta"),
+            quantity=cms.untracked.string("eta")),
+        cms.PSet(tag=cms.untracked.string("Phi"),
+            quantity=cms.untracked.string("phi"))
+    )
+)
+
+process.p = cms.Path(process.ntpmu*process.ntptow)
+process.output=cms.OutputModule("PoolOutputModule",fileName=cms.untracked.string("file:test2.root"),SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring('p')),outputCommands=cms.untracked.vstring('keep *_*_*_ntupler'),dropMetaData=cms.untracked.string('ALL'))
+process.out=cms.EndPath(process.output)
+---END CONFIGURATION FILE USED---
+Git Commit Hash: 76556362565ed42cfc4555305580a0dc4451948d
+Git status as follows: (git status -uno)
+# On branch cbrainerd-ntupler-CMSSW_8_0_12
+nothing to commit (use -u to show untracked files)
+20-Jul-2016 15:24:44 CDT  Initiating request to open file root://cmsxrootd.fnal.gov//store/data/Run2015D/DoubleMuon/RECO/PromptReco-v3/000/256/629/00000/363822F8-F45E-E511-A5B5-02163E01431B.root
+[2016-07-20 15:24:44.738638 -0500][Error  ][XRootD            ] [cmsxrootd.fnal.gov:1094] Handling error while processing kXR_prepare (flags: kXR_stage , priority: 0, paths: /store/data/Run2015D/DoubleMuon/RECO/PromptReco-v3/000/256/629/00000/363822F8-F45E-E511-A5B5-02163E01431B.root): [ERROR] Error response.
+%MSG-w XrdAdaptor:  file_open 20-Jul-2016 15:25:28 CDT pre-events
+Data is served from INDIACMS-TIFR instead of original site T2_US_Nebraska
+%MSG
+20-Jul-2016 15:25:34 CDT  Successfully opened file root://cmsxrootd.fnal.gov//store/data/Run2015D/DoubleMuon/RECO/PromptReco-v3/000/256/629/00000/363822F8-F45E-E511-A5B5-02163E01431B.root
+input_line_174:5:39: error: rvalue reference to type 'vector<[...]>' cannot bind to lvalue of type 'vector<[...]>'
+   ((CaloTower*)obj)->setConstituents((vector<DetId>&)*(vector<DetId>*)args[0]);
+                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/cvmfs/cms.cern.ch/slc6_amd64_gcc530/cms/cmssw/CMSSW_8_0_12/src/DataFormats/CaloTowers/interface/CaloTower.h:65:46: note: passing argument to parameter 'ids' here
+  void setConstituents( std::vector<DetId>&& ids ) { constituents_=std::move(ids);}
+                                             ^
+20-Jul-2016 15:25:52 CDT  Closed file root://cmsxrootd.fnal.gov//store/data/Run2015D/DoubleMuon/RECO/PromptReco-v3/000/256/629/00000/363822F8-F45E-E511-A5B5-02163E01431B.root
+----- Begin Fatal Exception 20-Jul-2016 15:25:52 CDT-----------------------
+An exception of category 'FatalRootError' occurred while
+   [0] Constructing the EventProcessor
+   [1] Constructing module: class=CaloViewNtpProducer label='ntptow'
+   Additional Info:
+      [a] Fatal Root Error: @SUB=TClingCallFunc::make_wrapper
+Failed to compile
+  ==== SOURCE BEGIN ====
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-security"
+__attribute__((used)) extern "C" void __cf_7(void* obj, int nargs, void** args, void* ret)
+{
+   ((CaloTower*)obj)->setConstituents((vector<DetId>&)*(vector<DetId>*)args[0]);
+   return;
+}
+#pragma clang diagnostic pop
+  ==== SOURCE END ====
+
+----- End Fatal Exception -------------------------------------------------
