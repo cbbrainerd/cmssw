@@ -1128,7 +1128,7 @@ void CaloTowersCreationAlgo::convert(const CaloTowerDetId& id, const MetaTower& 
 
     } // loop over matacontains
 
-    caloTower.setConstituents(std::move(contains));
+    caloTower.setConstituents(contains);
     caloTower.setHottestCellE(maxCellE);
 
     // std::cout << "CaloTowerVI " << nalgo << ' ' << caloTower.id() << ((inEcals[1]==1) ? "EE " : " " )  << caloTower.pt() << ' ' << caloTower.et() << ' ' << caloTower.mass() << ' '

@@ -62,7 +62,7 @@ public:
    // setters
   void addConstituent( DetId id ) { constituents_.push_back( id ); }
   void addConstituents( const std::vector<DetId>& ids );
-  void setConstituents( std::vector<DetId>&& ids ) { constituents_=std::move(ids);}
+  void setConstituents( std::vector<DetId>& ids ) { constituents_=std::move(ids);}
 
   void setEcalTime(int t) { ecalTime_ = t; };
   void setHcalTime(int t) { hcalTime_ = t; };
@@ -158,7 +158,7 @@ public:
   const GlobalPoint& hadPosition() const { return hadPosition_ ; }
 
   int emLvl1() const { return emLvl1_; }
-  int hadLv11() const { return hadLvl1_; }
+  int hadLvl1() const { return hadLvl1_; }
 
   // energy contained in depths>1 in the HE for 18<|iEta|<29
   double hadEnergyHeOuterLayer() const { return (subdet_ == HcalEndcap) ? outerE_ : 0; }
