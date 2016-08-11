@@ -3,6 +3,8 @@ import FWCore.ParameterSet.Config as cms
 from Configuration.StandardSequences.Eras import eras
 process = cms.Process('ntupler',eras.Run2_2016)
 
+import ntp.CaloViewNtpProducer.DumpVariables_cfi as ntp
+
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
@@ -35,38 +37,17 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('--mc nevts:10'),
+    annotation = cms.untracked.string('MC Ntupler'),
     name = cms.untracked.string('Applications'),
-    version = cms.untracked.string('$Revision: 1.19 $')
+    version = cms.untracked.string('$Revision: v3 $')
 )
+
+process.ntptow=ntp.ntptow
+
+process.ntpmu=ntp.ntpmu
 
 # Output definition
 
-process.ntptow=cms.EDProducer("CaloViewNtpProducer",
-    src=cms.InputTag("towerMaker"),
-    variables=cms.VPSet(
-        cms.PSet(tag=cms.untracked.string("ieta"),
-            quantity=cms.untracked.string("ieta")),
-        cms.PSet(tag=cms.untracked.string("theta"),
-            quantity=cms.untracked.string("theta")),
-        cms.PSet(tag=cms.untracked.string("emEt"),
-            quantity=cms.untracked.string("emEt")),
-        cms.PSet(tag=cms.untracked.string("hadEt"),
-            quantity=cms.untracked.string("hadEt"))
-    )
-)
-
-process.ntpmu=cms.EDProducer("CandViewNtpProducer",
-    src=cms.InputTag("towerMaker"),
-    variables=cms.VPSet(
-        cms.PSet(tag=cms.untracked.string("pt"),
-            quantity=cms.untracked.string("pt")),
-        cms.PSet(tag=cms.untracked.string("eta"),
-            quantity=cms.untracked.string("eta")),
-        cms.PSet(tag=cms.untracked.string("phi"),
-            quantity=cms.untracked.string("phi"))
-    )
-)
 
 #Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
@@ -76,7 +57,7 @@ process.raw2digi_step = cms.Path(process.RawToDigi)
 process.reconstruction_step = cms.Path(process.reconstruction)
 
 process.p = cms.Path(process.ntpmu*process.ntptow)
-process.output=cms.OutputModule("PoolOutputModule",fileName=cms.untracked.string("file:test2.root"),SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring('p')),outputCommands=cms.untracked.vstring('keep *_ntpmu_*_ntupler','keep *_ntptow_*_ntupler'),dropMetaData=cms.untracked.string('ALL'))
+process.output=cms.OutputModule("PoolOutputModule",fileName=cms.untracked.string("file:NtpMC.root"),SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring('p')),outputCommands=cms.untracked.vstring('keep *_ntpmu_*_ntupler','keep *_ntptow_*_ntupler'),dropMetaData=cms.untracked.string('ALL'))
 process.out=cms.EndPath(process.output)
 
 process.schedule=cms.Schedule(process.raw2digi_step,process.reconstruction_step,process.p,process.out)
