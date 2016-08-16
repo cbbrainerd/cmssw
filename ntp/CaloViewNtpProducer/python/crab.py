@@ -8,7 +8,7 @@ def Data(config):
     config.General.requestName = 'DoubleMuonNtuplerRun2016B'
     config.JobType.psetName = '../python/NtpData_cfi.py'
     config.Data.inputDataset = '/DoubleMuon/Run2016E-PromptReco-v2/RECO'
-    config.Data.unitsPerJob = 2
+    config.Data.unitsPerJob = 3
     config.Data.outputDatasetTag = 'DoubleMuonNtuplerRun2016B'
     return config
 def MC(config):
