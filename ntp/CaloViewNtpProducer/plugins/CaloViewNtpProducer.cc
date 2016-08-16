@@ -10,7 +10,7 @@
 
 class MuonViewNtpProducer : public NtpProducer2<edm::View<reco::Muon>,std::vector<double>,std::vector<int>,std::vector<unsigned int> > {
 public:
-    MuonViewNtpProducer(const edm::ParameterSet& par) : NtpProducer2(par,std::string("double"),std::string("int"),std::string("unsigned int")) {}
+    MuonViewNtpProducer(const edm::ParameterSet& par) : NtpProducer2(par,std::string("double"),std::string("int"),std::string("unsignedint")) {}
 };
 
 class CaloViewNtpProducer : public NtpProducer2<edm::View<CaloTower>,std::vector<double>,std::vector<int> > {
