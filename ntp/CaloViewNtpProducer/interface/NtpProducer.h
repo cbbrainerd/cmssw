@@ -60,7 +60,7 @@ public:
       /// destructor
 //  NtpProducer2::~NtpProducer2() {}
   
-  inline void produces(edm::ParameterSet& par) { //Called recursively so the main EDProducer registers ALL products. Kind of ugly. Inefficient
+  inline void produces(edm::ParameterSet& par) { //Called recursively so the main EDProducer registers ALL products. Kind of ugly. Inefficient? Also doesn't work lol
          std::vector<edm::ParameterSet> variables = par.template getParameter<std::vector<edm::ParameterSet> >("variables");
          std::vector<edm::ParameterSet>::const_iterator
          q = variables.begin(), end = variables.end();
