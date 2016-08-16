@@ -49,15 +49,21 @@ public:
       lazyParser_( par.template getUntrackedParameter<bool>( "lazyParser", false ) ),
       prefix_( par.template getUntrackedParameter<std::string>( "prefix","" ) ),
       eventInfo_( par.template getUntrackedParameter<bool>( "eventInfo",true ) )
-      {
+  {
+      if(eventInfo_){
+        produces<edm::EventNumber_t>( prefix_+"EventNumber" ).setBranchAlias( prefix_ + "EventNumber" );
+        produces<unsigned int>( prefix_ + "RunNumber" ).setBranchAlias( prefix_ + "RunNumber" );
+        produces<unsigned int>( prefix_ + "LumiBlock" ).setBranchAlias( prefix_ + "Lumiblock" );
+      }
+            this->produces(par);
+   }
+      /// destructor
+//  NtpProducer2::~NtpProducer2() {}
+  
+  inline void produces(edm::ParameterSet& par) { //Called recursively so the main EDProducer registers ALL products. Kind of ugly. Inefficient
          std::vector<edm::ParameterSet> variables = par.template getParameter<std::vector<edm::ParameterSet> >("variables");
          std::vector<edm::ParameterSet>::const_iterator
          q = variables.begin(), end = variables.end();
-         if(eventInfo_){
-           produces<edm::EventNumber_t>( prefix_+"EventNumber" ).setBranchAlias( prefix_ + "EventNumber" );
-           produces<unsigned int>( prefix_ + "RunNumber" ).setBranchAlias( prefix_ + "RunNumber" );
-           produces<unsigned int>( prefix_ + "LumiBlock" ).setBranchAlias( prefix_ + "Lumiblock" );
-         }
          for (; q!=end; ++q) {
            if(q->getUntrackedParameter<std::string>("Ctype")!=typeString_)
                 continue;
@@ -65,13 +71,14 @@ public:
            StringObjectFunction<typename C::value_type> quantity(q->getUntrackedParameter<std::string>("quantity"), lazyParser_);
            tags_.push_back(std::make_pair(tag, quantity));
            produces<type>(tag).setBranchAlias(tag);
-    
-         }
-      }
-      /// destructor
-//  NtpProducer2::~NtpProducer2() {}
-  
-  //protected: //Expose this publically so it be called from parent- check if this is the right way to do this. Alternatively maybe friend function or see how the FW itself calls a plugin
+           }
+         childProducer_.produces(par);
+  }
+  inline void delegateProduce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
+    this->produce(iEvent,iSetup);
+  }
+
+  protected:
     /// process an event
   virtual void produce( edm::Event& iEvent, const edm::EventSetup& iSetup) override {
      edm::Handle<C> coll;
@@ -85,9 +92,10 @@ public:
          x->push_back(q->second(*elem));
        }
        iEvent.put(x, q->first);
-       childProducer_.produce(iEvent,iSetup);
+       childProducer_.delegateProduce(iEvent,iSetup);
      }
   }
+  
 
 private:
   /// label of the collection to be read in
