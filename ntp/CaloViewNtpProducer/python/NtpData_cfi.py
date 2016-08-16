@@ -6,7 +6,7 @@ process = cms.Process("ntupler")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
@@ -17,6 +17,7 @@ process.source = cms.Source("PoolSource",
 #        'root://cmsxrootd.fnal.gov//store/mc/RunIISpring16DR80/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/ALCARECO/StreamALCACombined-PUSpring16_ALCA_Peak_TkAlZMuMu_80X_mcRun2_asymptotic_2016_peak_v0-v1/00000/00D55FCC-AF3E-E611-929C-0CC47A78A468.root' 
 #        '/DoubleMuon/Run2016E-PromptReco-v2/RECO'
 #        '/store/data/Run2016E/DoubleMuon/RECO/PromptReco-v2/000/276/830/00000/0EA25E84-AB4C-E611-B14B-02163E01431D.root'
+#         'file://./DataTestFile.root'
     )
 )
 
