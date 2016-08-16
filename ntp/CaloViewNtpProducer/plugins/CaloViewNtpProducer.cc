@@ -1,5 +1,4 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
-#include "CommonTools/UtilAlgos/interface/NtpProducer.h"
 
 #include "ntp/CaloViewNtpProducer/interface/NtpProducer.h"
 
@@ -9,17 +8,15 @@
 //Muons
 #include "DataFormats/MuonReco/interface/Muon.h"
 
-typedef NtpProducer<edm::View<CaloTower> > CaloViewNtpProducer;
-typedef NtpProducer<edm::View<reco::Muon> > MuonViewNtpProducer;
-//typedef NtpProducer2<edm::View<reco::Muon>,std::vector<float>,std::vector<double> > MuonViewNtpProducer2;
-
-class MuonViewNtpProducer2 : public NtpProducer2<edm::View<reco::Muon>,std::vector<double> > {
+class MuonViewNtpProducer : public NtpProducer2<edm::View<reco::Muon>,std::vector<double>,std::vector<int>,std::vector<unsigned int> > {
 public:
-    MuonViewNtpProducer2(const edm::ParameterSet& par) : NtpProducer2(par,std::string("doubleVector")) {}
+    MuonViewNtpProducer(const edm::ParameterSet& par) : NtpProducer2(par,std::string("double"),std::string("int"),std::string("unsigned int")) {}
 };
 
+class CaloViewNtpProducer : public NtpProducer2<edm::View<CaloTower>,std::vector<double>,std::vector<int> > {
+public:
+    CaloViewNtpProducer(const edm::ParameterSet& par) : NtpProducer2(par,std::string("double"),std::string("int")) {}
+};
 
-DEFINE_FWK_MODULE(CaloViewNtpProducer);
 DEFINE_FWK_MODULE(MuonViewNtpProducer);
-DEFINE_FWK_MODULE(MuonViewNtpProducer2);
-
+DEFINE_FWK_MODULE(CaloViewNtpProducer);

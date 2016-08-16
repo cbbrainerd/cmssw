@@ -38,6 +38,6 @@ ntpmu=cms.EDProducer("MuonViewNtpProducer",
             ctype=cms.untracked.string("int")),
         cms.PSet(tag=cms.untracked.string("muonType"),
             quantity=cms.untracked.string("type"),
-            ctype=cms.untracked.string("untracked int"))
+            ctype=cms.untracked.string("unsigned int"))
     )
 )
