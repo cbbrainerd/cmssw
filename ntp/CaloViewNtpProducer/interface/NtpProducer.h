@@ -22,11 +22,13 @@
 #include "DataFormats/Provenance/interface/RunLumiEventNumber.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
-#include <string>
 
 template<typename... types> 
-class NtpProducer2 {
+class NtpProducer2 : edm::EDProducer {
+public:
     NtpProducer2()=delete;
+    NtpProducer2(const edm::ParameterSet&) {}
+    virtual void produce( edm::Event& iEvent, const edm::EventSetup& iSetup) override {}
 };
 
 template<typename C,typename type,typename... types>
@@ -35,8 +37,8 @@ public:
   /// constructor from parameter set
   template<typename... strings>
   NtpProducer2( const edm::ParameterSet& par , std::string typ, strings... otherTypes ) :
-      typeString_(typ) ,
       childProducer_(par,otherTypes...) ,
+      typeString_(typ) ,
       srcToken_( consumes<C>( par.template getParameter<edm::InputTag>( "src" ) ) ),
       lazyParser_( par.template getUntrackedParameter<bool>( "lazyParser", false ) ),
       prefix_( par.template getUntrackedParameter<std::string>( "prefix","" ) ),
@@ -61,74 +63,45 @@ public:
          }
       }
       /// destructor
-  ~NtpProducer2();
-
-//protected: //Expose this publically so it be called from parent- check if this is the right way to do this. Alternatively maybe friend function or see how the FW itself calls a plugin
-  /// process an event
-  virtual void produce( edm::Event&, const edm::EventSetup&) override;
+//  NtpProducer2::~NtpProducer2() {}
+  
+  //protected: //Expose this publically so it be called from parent- check if this is the right way to do this. Alternatively maybe friend function or see how the FW itself calls a plugin
+    /// process an event
+  virtual void produce( edm::Event& iEvent, const edm::EventSetup& iSetup) override {
+     edm::Handle<C> coll;
+     iEvent.getByToken(srcToken_, coll);
+     typename std::vector<std::pair<std::string, StringObjectFunction<typename C::value_type> > >::const_iterator
+       q = tags_.begin(), end = tags_.end();
+     for(;q!=end; ++q) {
+       std::auto_ptr<type> x(new type);
+       x->reserve(coll->size());
+       for (typename C::const_iterator elem=coll->begin(); elem!=coll->end(); ++elem ) {
+         x->push_back(q->second(*elem));
+       }
+       iEvent.put(x, q->first);
+       childProducer_.produce(iEvent,iSetup);
+     }
+  }
 
 private:
   /// label of the collection to be read in
+  NtpProducer2<C,types...> childProducer_;
+  std::string typeString_;
   edm::EDGetTokenT<C> srcToken_;
   /// variable tags
   std::vector<std::pair<std::string, StringObjectFunction<typename C::value_type> > > tags_;
   bool lazyParser_;
   std::string prefix_;
   bool eventInfo_;
-  std::string typeString_;
-  NtpProducer2<C,types...> childProducer_;
   //edm::EDProducer* childProducer_;
 };
 
-
-template<typename C,typename type,typename... types>
-NtpProducer2<C,type,types...>::~NtpProducer2() {
-}
-
-template<typename C,typename type>
-void NtpProducer2<C,type>::produce( edm::Event& iEvent, const edm::EventSetup& iSetup) {
-   edm::Handle<C> coll;
-   iEvent.getByToken(srcToken_, coll);
-   typename std::vector<std::pair<std::string, StringObjectFunction<typename C::value_type> > >::const_iterator
-     q = tags_.begin(), end = tags_.end();
-   for(;q!=end; ++q) {
-     if(q->getUntrackedParameter<std::string>("Ctype")!=typeString_)
-          continue;
-     std::auto_ptr<std::vector<float> > x(new std::vector<type>);
-     x->reserve(coll->size());
-     for (typename C::const_iterator elem=coll->begin(); elem!=coll->end(); ++elem ) {
-       x->push_back(q->second(*elem));
-     }
-     iEvent.put(x, q->first);
-     childProducer_.produce(iEvent,iSetup);
-   }
-}
-
+/*
 template<typename C,typename type> //Specialization for lowest level of ED::Producer. Main difference is that it does have any children, and thus does not call the produce method for its child. Also produces eventInfo, if configured.
 class NtpProducer2<C,type> : public edm::EDProducer {
 public:
   /// constructor from parameter set
-  NtpProducer2( const edm::ParameterSet& , std::string str );
-  /// destructor
-  ~NtpProducer2();
-
-//protected: //Expose publically so that parent can call this... not sure if this is the right way to do this
-  /// process an event
-  virtual void produce( edm::Event&, const edm::EventSetup&) override;
-
-private:
-  /// label of the collection to be read in
-  edm::EDGetTokenT<C> srcToken_;
-  /// variable tags
-  std::vector<std::pair<std::string, StringObjectFunction<typename C::value_type> > > tags_;
-  bool lazyParser_;
-  std::string prefix_;
-  bool eventInfo_;
-  std::string typeString_;
-};
-
-template<typename C,typename type> //Specialization for lowest level of ED::Producer. Main difference is that it does have any children, and thus does not call the produce method for its child. Also produces eventInfo, if configured.
-NtpProducer2<C,type>::NtpProducer2( const edm::ParameterSet& par , std::string typeName ) :
+  NtpProducer2( const edm::ParameterSet& par , std::string typeName ) :
   srcToken_( consumes<C>( par.template getParameter<edm::InputTag>( "src" ) ) ),
   lazyParser_( par.template getUntrackedParameter<bool>( "lazyParser", false ) ),
   prefix_( par.template getUntrackedParameter<std::string>( "prefix","" ) ),
@@ -155,12 +128,8 @@ NtpProducer2<C,type>::NtpProducer2( const edm::ParameterSet& par , std::string t
    }
 }
 
-template<typename C,typename type>
-NtpProducer2<C>::~NtpProducer2() {
-}
-
-template<typename C,typename type>
-void NtpProducer2<C>::produce( edm::Event& iEvent, const edm::EventSetup&) {
+template<>
+virtual void produce( edm::Event& iEvent, const edm::EventSetup&) override {
    edm::Handle<C> coll;
    iEvent.getByToken(srcToken_, coll);
    if(eventInfo_){
@@ -177,7 +146,7 @@ void NtpProducer2<C>::produce( edm::Event& iEvent, const edm::EventSetup&) {
    typename std::vector<std::pair<std::string, StringObjectFunction<typename C::value_type> > >::const_iterator
      q = tags_.begin(), end = tags_.end();
    for(;q!=end; ++q) {
-     if(q->getUntrackedParameter<std::string>("Ctype")!=typeString_)
+     if(q->template getUntrackedParameter<std::string>("Ctype")!=typeString_)
           continue;
      std::auto_ptr<std::vector<float> > x(new std::vector<type>);
      x->reserve(coll->size());
@@ -187,5 +156,23 @@ void NtpProducer2<C>::produce( edm::Event& iEvent, const edm::EventSetup&) {
      iEvent.put(x, q->first);
    }
 }
+
+
+
+//protected: //Expose publically so that parent can call this... not sure if this is the right way to do this
+  /// process an event
+  virtual void produce( edm::Event&, const edm::EventSetup&) override;
+
+private:
+  /// label of the collection to be read in
+  edm::EDGetTokenT<C> srcToken_;
+  /// variable tags
+  std::vector<std::pair<std::string, StringObjectFunction<typename C::value_type> > > tags_;
+  bool lazyParser_;
+  std::string prefix_;
+  bool eventInfo_;
+  std::string typeString_;
+};
+*/
 
 #endif
