@@ -29,14 +29,14 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
 
-template<typename... types> 
+template<typename C,typename... types> 
 class NtpProducer2 : edm::EDProducer {
   typedef std::vector<std::pair<std::string, StringObjectFunction<typename C::value_type> > > tagType;
 public:
     NtpProducer2()=delete;
     NtpProducer2(const edm::ParameterSet&) {}
     virtual void produce( edm::Event& iEvent, const edm::EventSetup& iSetup) override {}
-    std::vector<std::pair<TypeID,tagType> > produces() { return std::vector<std::pair<TypeID,tagType> >(); }
+    std::vector<std::pair<edm::TypeID,tagType> > moduleProduces() { return std::vector<std::pair<edm::TypeID,tagType> >(); }
 };
 
 template<typename C,typename type,typename... types>
@@ -57,9 +57,9 @@ public:
          std::vector<edm::ParameterSet>::const_iterator
          q = variables.begin(), end = variables.end();
          if(eventInfo_){
-           produces<edm::EventNumber_t>( prefix_+"EventNumber" ).setBranchAlias( prefix_ + "EventNumber" );
-           produces<unsigned int>( prefix_ + "RunNumber" ).setBranchAlias( prefix_ + "RunNumber" );
-           produces<unsigned int>( prefix_ + "LumiBlock" ).setBranchAlias( prefix_ + "Lumiblock" );
+//           produces<edm::EventNumber_t>( prefix_+"EventNumber" ).setBranchAlias( prefix_ + "EventNumber" );
+//           produces<unsigned int>( prefix_ + "RunNumber" ).setBranchAlias( prefix_ + "RunNumber" );
+//           produces<unsigned int>( prefix_ + "LumiBlock" ).setBranchAlias( prefix_ + "Lumiblock" );
          }
          for (; q!=end; ++q) {
            if(q->getUntrackedParameter<std::string>("Ctype")!=typeString_)
@@ -68,17 +68,18 @@ public:
            StringObjectFunction<typename C::value_type> quantity(q->getUntrackedParameter<std::string>("quantity"), lazyParser_);
            tags_.push_back(std::make_pair(tag, quantity));
          }
-         allTags_=this->produces();
-         for(x=allTags_.begin();x!=allTags_.end();++x) {
-            for(y=x->second().begin();y!=x->second().end()) {
-                produces(x->first(),y->first()).setBranchAlias(y->first());
+         allTags_=this->moduleProduces();
+         for(auto x=allTags_.begin();x!=allTags_.end();++x) {
+            for(auto y=x->second.begin();y!=x->second.end();++y) {
+                produces(x->first,y->first).setBranchAlias(y->first);
             }
          }
       }
       
-      std::vector<std::pair<TypeID,tagType> > produces() {
-            auto returnVal=childProducer_.produces();
-            returnVal.push_back(std::make_pair(TypeID(type),tags_);
+      std::vector<std::pair<edm::TypeID,tagType> > moduleProduces() 
+      {
+            auto returnVal=childProducer_.moduleProduces();
+            returnVal.push_back(std::make_pair(edm::TypeID(typeid(type)),tags_));
             return returnVal;
       }
       /// destructor
@@ -109,7 +110,7 @@ private:
   edm::EDGetTokenT<C> srcToken_;
   /// variable tags
   tagType tags_;
-  std::vector<std::pair<TypeID,tagType> > allTags_;
+  std::vector<std::pair<edm::TypeID,tagType> > allTags_;
   bool lazyParser_;
   std::string prefix_;
   bool eventInfo_;
