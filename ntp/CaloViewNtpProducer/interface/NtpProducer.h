@@ -40,6 +40,7 @@
    *     )
    * )
  * Then call this module as usual. Generally want to make sure to only keep products made by the module.
+ * Note that the FW automatically converts any function called to a double internally, so be sure that the return type of whatever is called is exactly representable as a double if it makes a difference. There is a static_assert to reject any such types though.
  */
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -47,6 +48,9 @@
 #include "DataFormats/Provenance/interface/RunLumiEventNumber.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "CommonTools/Utils/interface/StringObjectFunction.h"
+
+#include <limits>
+#include <type_traits>
 
 template<typename C,typename... types> //Base class for the NtpProducer2 template. Every other NtpProducer2 has a child- this is the bottom one in the ladder. It's made specifically to not do much at all.
 class NtpProducer2 : edm::EDProducer {
@@ -62,6 +66,9 @@ template<typename C,typename type,typename... types>
 class NtpProducer2<C,type,types...> : public edm::EDProducer {
   typedef std::vector<std::pair<std::string, StringObjectFunction<typename C::value_type> > > tagType;
 public:
+  typedef typename type::value_type v;
+  typedef std::numeric_limits<v> limits;
+  static_assert((std::is_fundamental<v>::value) && (limits::max()==v(double(limits::max()))),"Type given cannot be handled by NtpProducer2."); //The framework converts called values to doubles. This checks that this conversion is safe and refuses to compile otherwise.
   /// constructor from parameter set
   template<typename... strings>
   NtpProducer2( const edm::ParameterSet& par , std::string typ, strings... otherTypes ) :

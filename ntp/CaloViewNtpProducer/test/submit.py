@@ -4,11 +4,14 @@
 
 import subprocess
 import pickle
-
-f=open("versionControl.p",'r')
-versions=pickle.load(f)
-newVersion=len(versions)+1
-f.close()
+try:
+    f=open("versionControl.p",'r')
+    versions=pickle.load(f)
+    newVersion=len(versions)+1
+    f.close()
+except IOError:
+    versions={}
+    newVersion=1
 
 try:
     subprocess.check_call(["git","status","-uno"])
