@@ -10,6 +10,7 @@ def Data(config):
     config.Data.inputDataset = '/DoubleMuon/Run2016E-PromptReco-v2/RECO'
     config.Data.unitsPerJob = 2
     config.Data.outputDatasetTag = 'DoubleMuonNtuplerRun2016B'
+    config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-277148_13TeV_PromptReco_Collisions16_JSON.txt'
     return config
 def MC(config):
     config=common(config)
