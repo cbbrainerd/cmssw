@@ -36,6 +36,8 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
+#include "DataFormats/Math/interface/LorentzVector.h"
+
 //#include <boost/math/special_functions/spherical_harmonic.hpp>
 
 //
@@ -84,8 +86,16 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       edm::Handle<std::vector<unsigned int> > muonType_;
 //      TFile *tfile_;
       TH1D *numberMuons_;
+      TH1D *numberLooseMuons_;
       TH1D *etSumOppositeSignDimuons_;
       TH1D *etSumSameSignDimuons_;
+      TH1D *sameSignDimuonInvariantMass_;
+      TH1D *oppositeSignDimuonInvariantMass_;
+      TH1D *muonPtH_;
+      TH1D *looseMuonPt_;
+      TH1D *muonEtaH_;
+      TH1D *muonPhiH_;
+      TH1D *muonTypeH_;
 //      std::array<std::array<std::complex,howManyCaloTowers>,N> multipoleMoments;
 };
 
@@ -117,8 +127,16 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    edm::Service<TFileService> fs;
 //   tfile_=new TFile("Histograms.root","UPDATE");
    numberMuons_=fs->make<TH1D>("numberMuons_","Number of Muons per Event",11,-.5,10.5);
-   etSumOppositeSignDimuons_=fs->make<TH1D>("etSumOppositeSignDimuons_","EtSum of Opposite Sign Dimuons",10000,0,1000);
-   etSumSameSignDimuons_=fs->make<TH1D>("etSumSameSignDimuons_","EtSum of Same Sign Dimuons",10000,0,1000);
+   numberLooseMuons_=fs->make<TH1D>("numberLooseMuons_","Number of Loose Muons per Event",11,-.5,10.5);
+   etSumOppositeSignDimuons_=fs->make<TH1D>("etSumOppositeSignDimuons_","EtSum of Opposite Sign Dimuons",1000,0,1000);
+   etSumSameSignDimuons_=fs->make<TH1D>("etSumSameSignDimuons_","EtSum of Same Sign Dimuons",1000,0,1000);
+   sameSignDimuonInvariantMass_=fs->make<TH1D>("sameSignDimuonInvariantMass_","Invariant Mass for Same Sign Dimuons",1000,0,1000);
+   oppositeSignDimuonInvariantMass_=fs->make<TH1D>("oppositeSignDimuonInvariantMass_","Invariant Mass for Opposite Sign Dimuons",1000,0,1000);
+   muonPtH_=fs->make<TH1D>("muonPtH_","Muon Pt",1000,0,1000);
+   looseMuonPt_=fs->make<TH1D>("looseMuonPt_","Loose Muon Pt",1000,0,1000);
+   muonEtaH_=fs->make<TH1D>("muonEtaH_","Loose Muon Eta",200,-3.2,3.2);
+   muonPhiH_=fs->make<TH1D>("muonPhiH_","Loose Muon Phi",200,-3.2,3.2);
+   muonTypeH_=fs->make<TH1D>("muonTypeH_","Muon Type",128,-.5,127.5);
 }
 
 
@@ -130,6 +148,37 @@ NtpAnalyzer::~NtpAnalyzer()
 
 }
 
+bool isPFMuon(const unsigned int& muonType) {
+    static constexpr unsigned int PFMuon = 1u<<5;
+    return PFMuon & muonType;
+}
+
+bool isGlobalMuon(const unsigned int& muonType) {
+    static constexpr unsigned int GlobalMuon = 1u<<1;
+    return GlobalMuon & muonType;
+}
+
+bool isTrackerMuon(const unsigned int& muonType) {
+    static constexpr unsigned int TrackerMuon = 1u<<2;
+    return TrackerMuon & muonType;
+}
+
+bool isLooseMuon(const unsigned int& muonType) {
+    return isPFMuon(muonType) && (isGlobalMuon(muonType) || isTrackerMuon(muonType));
+}
+
+
+struct muon {
+    static constexpr double muon_mass=.1056583;
+    double pt;
+    double eta;
+    double phi;
+    int charge;
+    unsigned int type;
+    math::PtEtaPhiMLorentzVectorD p4;
+    muon(double pt_,double eta_,double phi_,int charge_,unsigned int type_) :
+    pt(pt_),eta(eta_),phi(phi_),charge(charge_),type(type_),p4(pt_,eta_,phi_,muon_mass) {}
+};
 
 //
 // member functions
@@ -150,17 +199,39 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByToken(caloTowerIphiToken_,caloTowerIphi_);
    iEvent.getByToken(muonChargeToken_,muonCharge_);
    iEvent.getByToken(muonTypeToken_,muonType_);
+   std::vector<muon> looseMuons;
+//TH1D's still to be filled:
+   int i=0;
+   for(auto it=muonType_->begin();it!=muonType_->end();++it) {
+        muonPtH_->Fill((*muonPt_)[i]);
+        muonTypeH_->Fill(*it);
+        if(isLooseMuon(*it)) {
+            looseMuons.push_back(muon((*muonPt_)[i],(*muonEta_)[i],(*muonPhi_)[i],(*muonCharge_)[i],(*muonType_)[i]));
+            looseMuonPt_->Fill((*muonPt_)[i]);
+            muonEtaH_->Fill((*muonEta_)[i]);
+            muonPhiH_->Fill((*muonPhi_)[i]);
+        }
+        ++i;
+   }
    int numMuons=muonCharge_->size();
+   int numLooseMuons=looseMuons.size();
    numberMuons_->Fill(numMuons);
-   if(numMuons == 2) { //For now look at events with only two muons
+   numberLooseMuons_->Fill(numLooseMuons);
+   if(numLooseMuons == 2) { //For now look at events with only two muons
+        math::PtEtaPhiMLorentzVectorD p4;
+        p4=(looseMuons[0]).p4+(looseMuons[1]).p4;
+        double invariantMass=p4.M2();
         double etSum=0;
         for(auto it=emEt_->begin();it!=emEt_->end();++it) {
             etSum+=(*it);
         }
-        if((*muonCharge_)[0]!=(*muonCharge_)[1]) { //Opposite sign dimuon
+        if((looseMuons[0]).charge!=(looseMuons[1]).charge) { //Opposite sign dimuon
             etSumOppositeSignDimuons_->Fill(etSum);
+            oppositeSignDimuonInvariantMass_->Fill(invariantMass);
+            
         } else { //Same sign dimuon
             etSumSameSignDimuons_->Fill(etSum);
+            sameSignDimuonInvariantMass_->Fill(invariantMass);
         }
    }
 }

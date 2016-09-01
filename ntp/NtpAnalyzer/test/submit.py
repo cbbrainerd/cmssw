@@ -4,7 +4,7 @@
 
 import subprocess
 import pickle
-newVersion=1
+newVersion=2
 if __name__ == '__main__':
     from CRABAPI.RawCommand import crabCommand
     from CRABClient.ClientExceptions import ClientException
