@@ -21,5 +21,5 @@ if __name__ == '__main__':
             print "Failed submitting task: %s" % (cle)
 
     import ntp.NtpAnalyzer.crab as crab
-#    submit(crab.Data(crab.config)) //Data is not done running yet
-    submit(crab.MC(crab.config))
+    submit(crab.Data(crab.config))
+#    submit(crab.MC(crab.config))

@@ -96,6 +96,8 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       TH1D *muonEtaH_;
       TH1D *muonPhiH_;
       TH1D *muonTypeH_;
+      TH1D *deltaEta_;
+      TH1D *deltaPhi_;
 //      std::array<std::array<std::complex,howManyCaloTowers>,N> multipoleMoments;
 };
 
@@ -137,6 +139,8 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    muonEtaH_=fs->make<TH1D>("muonEtaH_","Loose Muon Eta",200,-3.2,3.2);
    muonPhiH_=fs->make<TH1D>("muonPhiH_","Loose Muon Phi",200,-3.2,3.2);
    muonTypeH_=fs->make<TH1D>("muonTypeH_","Muon Type",128,-.5,127.5);
+   deltaEta_=fs->make<TH1D>("deltaEta_","Dimuon Delta Eta",100,0,3.2);
+   deltaPhi_=fs->make<TH1D>("deltaPhi_","Dimuon Delta Phi",100,0,3.2);
 }
 
 
