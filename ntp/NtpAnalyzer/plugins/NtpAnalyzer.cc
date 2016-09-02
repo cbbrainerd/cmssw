@@ -209,7 +209,6 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByToken(muonChargeToken_,muonCharge_);
    iEvent.getByToken(muonTypeToken_,muonType_);
    std::vector<muon> looseMuons;
-//TH1D's still to be filled:
    int i=0;
    for(auto it=muonType_->begin();it!=muonType_->end();++it) {
         muonPtH_->Fill((*muonPt_)[i]);
@@ -227,6 +226,8 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    numberMuons_->Fill(numMuons);
    numberLooseMuons_->Fill(numLooseMuons);
    if(numLooseMuons == 2) { //For now look at events with only two muons
+        if(!(abs(looseMuons[0].eta)>=1&&(abs(looseMuons[1].eta)>=1)))
+            return; //Cut-remove a lot of background by ignoring muons at low eta
         double deltaEta=abs((looseMuons[0]).eta-(looseMuons[1]).eta);
         double deltaPhi=abs((looseMuons[0]).phi-(looseMuons[1]).phi);
         deltaEta_->Fill(deltaEta);
