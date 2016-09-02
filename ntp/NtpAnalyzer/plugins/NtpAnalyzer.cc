@@ -50,6 +50,11 @@
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
+template<typename T>
+T abs(const T& a) {
+    return(a<0?-a:a);
+}
+
 class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
    public:
       explicit NtpAnalyzer(const edm::ParameterSet&);
@@ -222,6 +227,10 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    numberMuons_->Fill(numMuons);
    numberLooseMuons_->Fill(numLooseMuons);
    if(numLooseMuons == 2) { //For now look at events with only two muons
+        double deltaEta=abs((looseMuons[0]).eta-(looseMuons[1]).eta);
+        double deltaPhi=abs((looseMuons[0]).phi-(looseMuons[1]).phi);
+        deltaEta_->Fill(deltaEta);
+        deltaPhi_->Fill(deltaPhi);
         math::PtEtaPhiMLorentzVectorD p4;
         p4=(looseMuons[0]).p4+(looseMuons[1]).p4;
         double invariantMass=p4.M2();
