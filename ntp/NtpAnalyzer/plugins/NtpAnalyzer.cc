@@ -144,8 +144,8 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    muonEtaH_=fs->make<TH1D>("muonEtaH_","Loose Muon Eta",200,-3.2,3.2);
    muonPhiH_=fs->make<TH1D>("muonPhiH_","Loose Muon Phi",200,-3.2,3.2);
    muonTypeH_=fs->make<TH1D>("muonTypeH_","Muon Type",128,-.5,127.5);
-   deltaEta_=fs->make<TH1D>("deltaEta_","Dimuon Delta Eta",100,0,3.2);
-   deltaPhi_=fs->make<TH1D>("deltaPhi_","Dimuon Delta Phi",100,0,3.2);
+   deltaEta_=fs->make<TH1D>("deltaEta_","Dimuon Delta Eta",200,0,6.4);
+   deltaPhi_=fs->make<TH1D>("deltaPhi_","Dimuon Delta Phi",200,0,6.4);
 }
 
 
