@@ -50,6 +50,11 @@
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
+template<typename T>
+T abs(const T& a) {
+    return(a<0?-a:a);
+}
+
 class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
    public:
       explicit NtpAnalyzer(const edm::ParameterSet&);
@@ -96,6 +101,8 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       TH1D *muonEtaH_;
       TH1D *muonPhiH_;
       TH1D *muonTypeH_;
+      TH1D *deltaEta_;
+      TH1D *deltaPhi_;
 //      std::array<std::array<std::complex,howManyCaloTowers>,N> multipoleMoments;
 };
 
@@ -130,13 +137,15 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    numberLooseMuons_=fs->make<TH1D>("numberLooseMuons_","Number of Loose Muons per Event",11,-.5,10.5);
    etSumOppositeSignDimuons_=fs->make<TH1D>("etSumOppositeSignDimuons_","EtSum of Opposite Sign Dimuons",1000,0,1000);
    etSumSameSignDimuons_=fs->make<TH1D>("etSumSameSignDimuons_","EtSum of Same Sign Dimuons",1000,0,1000);
-   sameSignDimuonInvariantMass_=fs->make<TH1D>("sameSignDimuonInvariantMass_","Invariant Mass for Same Sign Dimuons",1000,0,1000);
-   oppositeSignDimuonInvariantMass_=fs->make<TH1D>("oppositeSignDimuonInvariantMass_","Invariant Mass for Opposite Sign Dimuons",1000,0,1000);
+   sameSignDimuonInvariantMass_=fs->make<TH1D>("sameSignDimuonInvariantMass_","Invariant Mass for Same Sign Dimuons",1000,0,200);
+   oppositeSignDimuonInvariantMass_=fs->make<TH1D>("oppositeSignDimuonInvariantMass_","Invariant Mass for Opposite Sign Dimuons",1000,0,200);
    muonPtH_=fs->make<TH1D>("muonPtH_","Muon Pt",1000,0,1000);
    looseMuonPt_=fs->make<TH1D>("looseMuonPt_","Loose Muon Pt",1000,0,1000);
    muonEtaH_=fs->make<TH1D>("muonEtaH_","Loose Muon Eta",200,-3.2,3.2);
    muonPhiH_=fs->make<TH1D>("muonPhiH_","Loose Muon Phi",200,-3.2,3.2);
    muonTypeH_=fs->make<TH1D>("muonTypeH_","Muon Type",128,-.5,127.5);
+   deltaEta_=fs->make<TH1D>("deltaEta_","Dimuon Delta Eta",200,0,6.4);
+   deltaPhi_=fs->make<TH1D>("deltaPhi_","Dimuon Delta Phi",200,0,6.4);
 }
 
 
@@ -200,16 +209,17 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByToken(muonChargeToken_,muonCharge_);
    iEvent.getByToken(muonTypeToken_,muonType_);
    std::vector<muon> looseMuons;
-//TH1D's still to be filled:
    int i=0;
    for(auto it=muonType_->begin();it!=muonType_->end();++it) {
         muonPtH_->Fill((*muonPt_)[i]);
         muonTypeH_->Fill(*it);
-        if(isLooseMuon(*it)) {
-            looseMuons.push_back(muon((*muonPt_)[i],(*muonEta_)[i],(*muonPhi_)[i],(*muonCharge_)[i],(*muonType_)[i]));
-            looseMuonPt_->Fill((*muonPt_)[i]);
-            muonEtaH_->Fill((*muonEta_)[i]);
-            muonPhiH_->Fill((*muonPhi_)[i]);
+        if(isLooseMuon(*it)) { //Quality cut 
+            if(((*muonPt_)[i] > 10)&&((*muonEta_)[i] < 2.4)) { //Suggested cuts in SWGuideMuonIdRun2 (What is Loose PF comb. rel. isolation?)
+                looseMuons.push_back(muon((*muonPt_)[i],(*muonEta_)[i],(*muonPhi_)[i],(*muonCharge_)[i],(*muonType_)[i]));
+                looseMuonPt_->Fill((*muonPt_)[i]);
+                muonEtaH_->Fill((*muonEta_)[i]);
+                muonPhiH_->Fill((*muonPhi_)[i]);
+            }
         }
         ++i;
    }
@@ -218,6 +228,12 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    numberMuons_->Fill(numMuons);
    numberLooseMuons_->Fill(numLooseMuons);
    if(numLooseMuons == 2) { //For now look at events with only two muons
+        if(!(abs(looseMuons[0].eta)>=1&&(abs(looseMuons[1].eta)>=1)))
+            return; //Cut-remove a lot of background by ignoring muons at low eta
+        double deltaEta=abs((looseMuons[0]).eta-(looseMuons[1]).eta);
+        double deltaPhi=abs((looseMuons[0]).phi-(looseMuons[1]).phi);
+        deltaEta_->Fill(deltaEta);
+        deltaPhi_->Fill(deltaPhi);
         math::PtEtaPhiMLorentzVectorD p4;
         p4=(looseMuons[0]).p4+(looseMuons[1]).p4;
         double invariantMass=p4.M2();
