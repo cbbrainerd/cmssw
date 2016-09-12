@@ -109,6 +109,7 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       TH1D *caloTowerThetaH_;
       TH1D *emEtH_;
       TH1D *hadEtH_;
+      TH1D *numberCaloTowers_;
 //      std::array<std::array<std::complex,howManyCaloTowers>,N> multipoleMoments;
 };
 
@@ -157,6 +158,7 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    caloTowerThetaH_=fs->make<TH1D>("caloTowerThetaH_","Calo Tower Theta",1000,-3.14,3.14);
    emEtH_=fs->make<TH1D>("emEtH_","emEt Of Each Tower",1000,0,100);
    hadEtH_=fs->make<TH1D>("hadEtH_","hadEt Of Each Tower",1000,0,100);
+   numberCaloTowers_=fs->make<TH1D>("numberCaloTowers_","Number of Calo Towers per Event",5001,-.5,5000.5);
 }
 
 
@@ -236,6 +238,8 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
    int numMuons=muonCharge_->size();
    int numLooseMuons=looseMuons.size();
+   int numCaloTowers=emEt_->size();
+   numberCaloTowers_->Fill(numCaloTowers);
    numberMuons_->Fill(numMuons);
    numberLooseMuons_->Fill(numLooseMuons);
    if(numLooseMuons == 2) { //For now look at events with only two muons
@@ -250,7 +254,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         double invariantMass=p4.M2();
         double etSum=0;
 //        for(auto it=emEt_->begin();it!=emEt_->end();++it) {
-        for(unsigned int i=0;i!=(*emEt_).size();++i) {
+        for(int i=0;i!=numCaloTowers;++i) {
             etSum+=(*emEt_)[i];
             caloTowerIetaH_->Fill((*caloTowerIeta_)[i]);
             caloTowerIphiH_->Fill((*caloTowerIphi_)[i]);
