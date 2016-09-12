@@ -8,7 +8,7 @@ def Data(config):
     config.General.requestName = 'DoubleMuonNtuplerRun2016B'
     config.JobType.psetName = '../python/NtpData_cfi.py'
     config.Data.inputDataset = '/DoubleMuon/Run2016E-PromptReco-v2/RECO'
-    config.Data.unitsPerJob = 3
+    config.Data.unitsPerJob = 100
     config.Data.outputDatasetTag = 'DoubleMuonNtuplerRun2016B'
     config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-277148_13TeV_PromptReco_Collisions16_JSON.txt'
     return config
@@ -17,7 +17,7 @@ def MC(config):
     config.General.requestName = 'DYToLLNtuplerRunIISpring2016'
     config.JobType.psetName = '../python/NtpMC_cfi.py'
     config.Data.inputDataset = '/DYToLL_M_1_TuneCUETP8M1_13TeV_pythia8/RunIISpring16DR80-FlatPU8to37HcalNZSRAW_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/GEN-SIM-RAW'
-    config.Data.unitsPerJob = 4
+    config.Data.unitsPerJob = 100
     config.Data.outputDatasetTag = 'DYToLLNtuplesRunIISpring2016'
     return config
 def common(config):

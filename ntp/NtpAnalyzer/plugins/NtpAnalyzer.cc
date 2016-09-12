@@ -103,6 +103,12 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       TH1D *muonTypeH_;
       TH1D *deltaEta_;
       TH1D *deltaPhi_;
+
+      TH1D *caloTowerIetaH_;
+      TH1D *caloTowerIphiH_;
+      TH1D *caloTowerThetaH_;
+      TH1D *emEtH_;
+      TH1D *hadEtH_;
 //      std::array<std::array<std::complex,howManyCaloTowers>,N> multipoleMoments;
 };
 
@@ -146,6 +152,11 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    muonTypeH_=fs->make<TH1D>("muonTypeH_","Muon Type",128,-.5,127.5);
    deltaEta_=fs->make<TH1D>("deltaEta_","Dimuon Delta Eta",200,0,6.4);
    deltaPhi_=fs->make<TH1D>("deltaPhi_","Dimuon Delta Phi",200,0,6.4);
+   caloTowerIetaH_=fs->make<TH1D>("caloTowerIetaH_","Calo Tower iEta",57,-28.5,28.5);
+   caloTowerIphiH_=fs->make<TH1D>("caloTowerIphiH_","Calo Tower iPhi",72,.5,72.5);
+   caloTowerThetaH_=fs->make<TH1D>("caloTowerThetaH_","Calo Tower Theta",1000,-3.14,3.14);
+   emEtH_=fs->make<TH1D>("emEtH_","emEt Of Each Tower",1000,0,100);
+   hadEtH_=fs->make<TH1D>("hadEtH_","hadEt Of Each Tower",1000,0,100);
 }
 
 
@@ -238,8 +249,14 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         p4=(looseMuons[0]).p4+(looseMuons[1]).p4;
         double invariantMass=p4.M2();
         double etSum=0;
-        for(auto it=emEt_->begin();it!=emEt_->end();++it) {
-            etSum+=(*it);
+//        for(auto it=emEt_->begin();it!=emEt_->end();++it) {
+        for(unsigned int i=0;i!=(*emEt_).size();++i) {
+            etSum+=(*emEt_)[i];
+            caloTowerIetaH_->Fill((*caloTowerIeta_)[i]);
+            caloTowerIphiH_->Fill((*caloTowerIphi_)[i]);
+            caloTowerThetaH_->Fill((*caloTowerTheta_)[i]);
+            emEtH_->Fill((*emEt_)[i]);
+            hadEtH_->Fill((*hadEt_)[i]);
         }
         if((looseMuons[0]).charge!=(looseMuons[1]).charge) { //Opposite sign dimuon
             etSumOppositeSignDimuons_->Fill(etSum);
