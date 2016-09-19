@@ -96,6 +96,8 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       TH1D *etSumSameSignDimuons_;
       TH1D *sameSignDimuonInvariantMass_;
       TH1D *oppositeSignDimuonInvariantMass_;
+      TH1D *positiveSignDimuonInvariantMass_;
+      TH1D *negativeSignDimuonInvariantMass_;
       TH1D *muonPtH_;
       TH1D *looseMuonPt_;
       TH1D *muonEtaH_;
@@ -106,10 +108,13 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
       TH1D *caloTowerIetaH_;
       TH1D *caloTowerIphiH_;
+      TH2D *caloTowerGrid_;
       TH1D *caloTowerThetaH_;
       TH1D *emEtH_;
       TH1D *hadEtH_;
       TH1D *numberCaloTowers_;
+
+      TObjString *information_;
 //      std::array<std::array<std::complex,howManyCaloTowers>,N> multipoleMoments;
 };
 
@@ -146,6 +151,8 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    etSumSameSignDimuons_=fs->make<TH1D>("etSumSameSignDimuons_","EtSum of Same Sign Dimuons",1000,0,1000);
    sameSignDimuonInvariantMass_=fs->make<TH1D>("sameSignDimuonInvariantMass_","Invariant Mass for Same Sign Dimuons",1000,0,200);
    oppositeSignDimuonInvariantMass_=fs->make<TH1D>("oppositeSignDimuonInvariantMass_","Invariant Mass for Opposite Sign Dimuons",1000,0,200);
+   positiveSignDimuonInvariantMass_=fs->make<TH1D>("positiveSignDimuonInvariantMass_","Invariant Mass for Positive Sign Dimuons",1000,0,200);
+   negativeSignDimuonInvariantMass_=fs->make<TH1D>("negativeSignDimuonInvariantMass_","Invariant Mass for Negative Sign Dimuons",1000,0,200);
    muonPtH_=fs->make<TH1D>("muonPtH_","Muon Pt",1000,0,1000);
    looseMuonPt_=fs->make<TH1D>("looseMuonPt_","Loose Muon Pt",1000,0,1000);
    muonEtaH_=fs->make<TH1D>("muonEtaH_","Loose Muon Eta",200,-3.2,3.2);
@@ -155,10 +162,12 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    deltaPhi_=fs->make<TH1D>("deltaPhi_","Dimuon Delta Phi",200,0,6.4);
    caloTowerIetaH_=fs->make<TH1D>("caloTowerIetaH_","Calo Tower iEta",57,-28.5,28.5);
    caloTowerIphiH_=fs->make<TH1D>("caloTowerIphiH_","Calo Tower iPhi",72,.5,72.5);
-   caloTowerThetaH_=fs->make<TH1D>("caloTowerThetaH_","Calo Tower Theta",1000,-3.14,3.14);
+   caloTowerGrid_=fs->make<TH2D>("caloTowerGrid_","Calo Tower iEta and iPhi",57,-28.5,28.5,72,.5,72.5);
+   caloTowerThetaH_=fs->make<TH1D>("caloTowerThetaH_","Calo Tower Theta",1000,0,3.14);
    emEtH_=fs->make<TH1D>("emEtH_","emEt Of Each Tower",1000,0,100);
    hadEtH_=fs->make<TH1D>("hadEtH_","hadEt Of Each Tower",1000,0,100);
    numberCaloTowers_=fs->make<TH1D>("numberCaloTowers_","Number of Calo Towers per Event",5001,-.5,5000.5);
+   information_=fs->make<TObjString>("Cuts: Both muons loose, >= 1GeV pT, at least one muon >= 10GeV pT. Both muon eta < 2.4. Exactly two muons pass cuts. Version 6.");
 }
 
 
@@ -227,7 +236,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         muonPtH_->Fill((*muonPt_)[i]);
         muonTypeH_->Fill(*it);
         if(isLooseMuon(*it)) { //Quality cut 
-            if(((*muonPt_)[i] > 10)&&((*muonEta_)[i] < 2.4)) { //Suggested cuts in SWGuideMuonIdRun2 (What is Loose PF comb. rel. isolation?)
+            if(((*muonPt_)[i] > 1)&&((*muonEta_)[i] < 2.4)) { //Suggested cuts in SWGuideMuonIdRun2 (What is Loose PF comb. rel. isolation?)
                 looseMuons.push_back(muon((*muonPt_)[i],(*muonEta_)[i],(*muonPhi_)[i],(*muonCharge_)[i],(*muonType_)[i]));
                 looseMuonPt_->Fill((*muonPt_)[i]);
                 muonEtaH_->Fill((*muonEta_)[i]);
@@ -243,8 +252,10 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    numberMuons_->Fill(numMuons);
    numberLooseMuons_->Fill(numLooseMuons);
    if(numLooseMuons == 2) { //For now look at events with only two muons
-        if(!(abs(looseMuons[0].eta)>=1&&(abs(looseMuons[1].eta)>=1)))
-            return; //Cut-remove a lot of background by ignoring muons at low eta
+//        if(!(abs(looseMuons[0].eta)>=1&&(abs(looseMuons[1].eta)>=1)))
+        if(looseMuons[0].pt < 10 && looseMuons[1].pt < 10)
+            return;
+//            return; //Cut-remove a lot of background by ignoring muons at low eta
         double deltaEta=abs((looseMuons[0]).eta-(looseMuons[1]).eta);
         double deltaPhi=abs((looseMuons[0]).phi-(looseMuons[1]).phi);
         deltaEta_->Fill(deltaEta);
@@ -258,6 +269,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             etSum+=(*emEt_)[i];
             caloTowerIetaH_->Fill((*caloTowerIeta_)[i]);
             caloTowerIphiH_->Fill((*caloTowerIphi_)[i]);
+            caloTowerGrid_->Fill((*caloTowerIeta_)[i],(*caloTowerIphi_)[i]);
             caloTowerThetaH_->Fill((*caloTowerTheta_)[i]);
             emEtH_->Fill((*emEt_)[i]);
             hadEtH_->Fill((*hadEt_)[i]);
@@ -268,6 +280,11 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             
         } else { //Same sign dimuon
             etSumSameSignDimuons_->Fill(etSum);
+            if(looseMuons[0].charge > 0) {
+                positiveSignDimuonInvariantMass_->Fill(invariantMass);
+            } else {
+                negativeSignDimuonInvariantMass_->Fill(invariantMass);
+            }
             sameSignDimuonInvariantMass_->Fill(invariantMass);
         }
    }
