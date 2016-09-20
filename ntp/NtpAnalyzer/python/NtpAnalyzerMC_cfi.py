@@ -6,6 +6,7 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
+from ntp.NtpAnalyzer.MCFileList import filesList
 #from ntp.NtpAnalyzer.GetFiles import query
 
 #q_string="file dataset=/DYToLL_M_1_TuneCUETP8M1_13TeV_pythia8/cbrainer-DYToLLNtuplesRunIISpring2016-v8-fef2920ac3ef3d99cc54880fd410ec3e/USER instance=prod/phys03"
@@ -15,7 +16,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
-    fileNames = cms.untracked.vstring()
+    fileNames = filesList
 )
 
 process.TFileService = cms.Service("TFileService",

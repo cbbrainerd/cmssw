@@ -4,7 +4,7 @@
 
 import subprocess
 import pickle
-newVersion=2
+newVersion=6
 if __name__ == '__main__':
     from CRABAPI.RawCommand import crabCommand
     from CRABClient.ClientExceptions import ClientException
@@ -22,4 +22,4 @@ if __name__ == '__main__':
 
     import ntp.NtpAnalyzer.crab as crab
     submit(crab.Data(crab.config))
-#    submit(crab.MC(crab.config))
+    submit(crab.MC(crab.config))
