@@ -168,7 +168,8 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    emEtH_=fs->make<TH1D>("emEtH_","emEt Of Each Tower",1000,0,100);
    hadEtH_=fs->make<TH1D>("hadEtH_","hadEt Of Each Tower",1000,0,100);
    numberCaloTowers_=fs->make<TH1D>("numberCaloTowers_","Number of Calo Towers per Event",5001,-.5,5000.5);
-   information_=fs->make<TObjString>("Cuts: Both muons loose, >= 1GeV pT, at least one muon >= 10GeV pT. Both muon eta < 2.4. Exactly two muons pass cuts. Version 6.");
+//   information_=fs->make<TObjString>("Cuts: Both muons loose, >= 1GeV pT, at least one muon >= 10GeV pT. Both muon eta < 2.4. Exactly two muons pass cuts. Version 6.");
+    information_=fs->make<TObjString>("v7. Cuts: Both muons loose, no pT/eta cuts. Require exactly two loose muons, with dimuon mass between 80 and 100.");
 }
 
 
@@ -237,7 +238,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         muonPtH_->Fill((*muonPt_)[i]);
         muonTypeH_->Fill(*it);
         if(isLooseMuon(*it)) { //Quality cut 
-            if(((*muonPt_)[i] > 1)&&((*muonEta_)[i] < 2.4)) { //Suggested cuts in SWGuideMuonIdRun2 (What is Loose PF comb. rel. isolation?)
+            if(/*((*muonPt_)[i] > 1)&&((*muonEta_)[i] < 2.4)*/true) { //Suggested cuts in SWGuideMuonIdRun2 (What is Loose PF comb. rel. isolation?)
                 looseMuons.push_back(muon((*muonPt_)[i],(*muonEta_)[i],(*muonPhi_)[i],(*muonCharge_)[i],(*muonType_)[i]));
                 looseMuonPt_->Fill((*muonPt_)[i]);
                 muonEtaH_->Fill((*muonEta_)[i]);
@@ -253,17 +254,17 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    numberMuons_->Fill(numMuons);
    numberLooseMuons_->Fill(numLooseMuons);
    if(numLooseMuons == 2) { //For now look at events with only two muons
-//        if(!(abs(looseMuons[0].eta)>=1&&(abs(looseMuons[1].eta)>=1)))
-        if(looseMuons[0].pt < 10 && looseMuons[1].pt < 10)
+/*        if(looseMuons[0].pt < 10 && looseMuons[1].pt < 10)
+            return; */
+        math::PtEtaPhiMLorentzVectorD p4;
+        p4=(looseMuons[0]).p4+(looseMuons[1]).p4;
+        double invariantMass=p4.M2(); 
+        if(invariantMass<80 || invariantMass>100)
             return;
-//            return; //Cut-remove a lot of background by ignoring muons at low eta
         double deltaEta=abs((looseMuons[0]).eta-(looseMuons[1]).eta);
         double deltaPhi=abs((looseMuons[0]).phi-(looseMuons[1]).phi);
         deltaEta_->Fill(deltaEta);
         deltaPhi_->Fill(deltaPhi);
-        math::PtEtaPhiMLorentzVectorD p4;
-        p4=(looseMuons[0]).p4+(looseMuons[1]).p4;
-        double invariantMass=p4.M2();
         double etSum=0;
 //        for(auto it=emEt_->begin();it!=emEt_->end();++it) {
         for(int i=0;i!=numCaloTowers;++i) {
