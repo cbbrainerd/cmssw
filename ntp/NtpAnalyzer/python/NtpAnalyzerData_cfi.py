@@ -16,7 +16,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
-    fileNames = cms.untracked.vstring()
+    fileNames = cms.untracked.vstring("file:./NtpData_1.root")
 )
 
 process.TFileService = cms.Service("TFileService",
@@ -34,7 +34,31 @@ process.analyze = cms.EDAnalyzer('NtpAnalyzer',
     caloTowerIeta=cms.InputTag("ntptow","caloTowerIeta"),
     caloTowerIphi=cms.InputTag("ntptow","caloTowerIphi"),
     muonCharge=cms.InputTag("ntpmu","muonCharge"),
-    muonType=cms.InputTag("ntpmu","muonType")
+    muonType=cms.InputTag("ntpmu","muonType"),
+    listOfRuns=cms.vuint32([
+        276831,
+        276834,
+        276870,
+        276935,
+        276940,
+        276946,
+        276947,
+        276948,
+        276950,
+        277069,
+        277070,
+        277071,
+        277072,
+        277073,
+        277076,
+        277087,
+        277094,
+        277096,
+        277112,
+        277126,
+        277127,
+        277148]
+    )
 )
 
 process.p = cms.Path(process.analyze)

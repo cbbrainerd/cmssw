@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+import system 
 
 process=cms.Process("NtpAnalyzerMC")
 
@@ -34,7 +35,8 @@ process.analyze = cms.EDAnalyzer('NtpAnalyzer',
     caloTowerIeta=cms.InputTag("ntptow","caloTowerIeta"),
     caloTowerIphi=cms.InputTag("ntptow","caloTowerIphi"),
     muonCharge=cms.InputTag("ntpmu","muonCharge"),
-    muonType=cms.InputTag("ntpmu","muonType")
+    muonType=cms.InputTag("ntpmu","muonType"),
+    listOfRuns=cms.vuint32(1)
 )
 
 process.p = cms.Path(process.analyze)

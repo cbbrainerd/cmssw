@@ -19,7 +19,6 @@
 
 // system include files
 #include <memory>
-
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
@@ -29,7 +28,9 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include <vector>
+#include <utility>
 #include "TH1D.h"
+#include "TH1I.h"
 #include "TH2D.h"
 //#include "TFile.h"
 //#include <array>
@@ -80,6 +81,7 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       edm::EDGetTokenT<std::vector<int> > caloTowerIphiToken_;
       edm::EDGetTokenT<std::vector<int> > muonChargeToken_;
       edm::EDGetTokenT<std::vector<unsigned int> > muonTypeToken_;
+      edm::EDGetTokenT<unsigned int> runNumberToken_;
       edm::Handle<std::vector<double> > caloTowerTheta_;
       edm::Handle<std::vector<double> > emEt_;
       edm::Handle<std::vector<double> > hadEt_;
@@ -90,6 +92,7 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       edm::Handle<std::vector<int> > caloTowerIphi_;
       edm::Handle<std::vector<int> > muonCharge_;
       edm::Handle<std::vector<unsigned int> > muonType_;
+      edm::Handle<unsigned int> runNumber_;
 //      TFile *tfile_;
       TH1D *numberMuons_;
       TH1D *numberLooseMuons_;
@@ -115,7 +118,9 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       TH1D *hadEtH_;
       TH1D *numberCaloTowers_;
 
-      TObjString *information_;
+      std::map<unsigned int,TH1D*> invariantMassByRun_;
+      std::vector<unsigned int> availableRunNumbers;
+      TH1I *information_;
 //      std::array<std::array<std::complex,howManyCaloTowers>,N> multipoleMoments;
 };
 
@@ -140,7 +145,9 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
     caloTowerIetaToken_(consumes<std::vector<int> >(iConfig.getParameter<edm::InputTag>("caloTowerIeta"))),
     caloTowerIphiToken_(consumes<std::vector<int> >(iConfig.getParameter<edm::InputTag>("caloTowerIphi"))),
     muonChargeToken_(consumes<std::vector<int> >(iConfig.getParameter<edm::InputTag>("muonCharge"))),
-    muonTypeToken_(consumes<std::vector<unsigned int> >(iConfig.getParameter<edm::InputTag>("muonType")))
+    muonTypeToken_(consumes<std::vector<unsigned int> >(iConfig.getParameter<edm::InputTag>("muonType"))),
+    runNumberToken_(consumes<unsigned int>(edm::InputTag("ntpmu","RunNumber"))),
+    availableRunNumbers(iConfig.getParameter<std::vector<unsigned int> >("listOfRuns"))
 {
    //now do what ever initialization is needed
    usesResource("TFileService");
@@ -150,10 +157,10 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    numberLooseMuons_=fs->make<TH1D>("numberLooseMuons_","Number of Loose Muons per Event",11,-.5,10.5);
    etSumOppositeSignDimuons_=fs->make<TH1D>("etSumOppositeSignDimuons_","EtSum of Opposite Sign Dimuons",1000,0,1000);
    etSumSameSignDimuons_=fs->make<TH1D>("etSumSameSignDimuons_","EtSum of Same Sign Dimuons",1000,0,1000);
-   sameSignDimuonInvariantMass_=fs->make<TH1D>("sameSignDimuonInvariantMass_","Invariant Mass for Same Sign Dimuons",2000,0,2000);
-   oppositeSignDimuonInvariantMass_=fs->make<TH1D>("oppositeSignDimuonInvariantMass_","Invariant Mass for Opposite Sign Dimuons",2000,0,2000);
-   positiveSignDimuonInvariantMass_=fs->make<TH1D>("positiveSignDimuonInvariantMass_","Invariant Mass for Positive Sign Dimuons",2000,0,2000);
-   negativeSignDimuonInvariantMass_=fs->make<TH1D>("negativeSignDimuonInvariantMass_","Invariant Mass for Negative Sign Dimuons",2000,0,2000);
+   sameSignDimuonInvariantMass_=fs->make<TH1D>("sameSignDimuonInvariantMass_","Invariant Mass for Same Sign Dimuons",10000,0,2000);
+   oppositeSignDimuonInvariantMass_=fs->make<TH1D>("oppositeSignDimuonInvariantMass_","Invariant Mass for Opposite Sign Dimuons",10000,0,2000);
+   positiveSignDimuonInvariantMass_=fs->make<TH1D>("positiveSignDimuonInvariantMass_","Invariant Mass for Positive Sign Dimuons",10000,0,2000);
+   negativeSignDimuonInvariantMass_=fs->make<TH1D>("negativeSignDimuonInvariantMass_","Invariant Mass for Negative Sign Dimuons",10000,0,2000);
    muonPtH_=fs->make<TH1D>("muonPtH_","Muon Pt",1000,0,1000);
    looseMuonPt_=fs->make<TH1D>("looseMuonPt_","Loose Muon Pt",1000,0,1000);
    muonEtaH_=fs->make<TH1D>("muonEtaH_","Loose Muon Eta",200,-3.2,3.2);
@@ -169,7 +176,14 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    hadEtH_=fs->make<TH1D>("hadEtH_","hadEt Of Each Tower",1000,0,100);
    numberCaloTowers_=fs->make<TH1D>("numberCaloTowers_","Number of Calo Towers per Event",5001,-.5,5000.5);
 //   information_=fs->make<TObjString>("Cuts: Both muons loose, >= 1GeV pT, at least one muon >= 10GeV pT. Both muon eta < 2.4. Exactly two muons pass cuts. Version 6.");
-    information_=fs->make<TObjString>("v8. Cuts: Both muons loose, no pT/eta cuts. At least two muons- fill invariant mass for EVERY COMBINATION. No further cuts.");
+    information_=fs->make<TH1I>("information_","v8. Cuts: Both muons loose, no pT/eta cuts. At least two muons- fill invariant mass for EVERY COMBINATION. No further cuts.",1,0,1);
+    for(unsigned int i : availableRunNumbers) {
+        std::string tmp=std::to_string(i);
+        const char* name=tmp.c_str();
+        TH1D* tmpTH1D=fs->make<TH1D>(name,name,10000,0,2000);
+        invariantMassByRun_.insert(std::make_pair(i,tmpTH1D));
+
+    }
 }
 
 
@@ -232,6 +246,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByToken(caloTowerIphiToken_,caloTowerIphi_);
    iEvent.getByToken(muonChargeToken_,muonCharge_);
    iEvent.getByToken(muonTypeToken_,muonType_);
+   iEvent.getByToken(runNumberToken_,runNumber_);
    std::vector<muon> looseMuons;
    int i=0;
    for(auto it=muonType_->begin();it!=muonType_->end();++it) {
@@ -268,7 +283,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
         etSumOppositeSignDimuons_->Fill(etSum); //NB: This is for all dimuons now, just too lazy to change the name
         for(int i=1;i<numLooseMuons;++i) {
-            for(int j=0;j<i;++i) {
+            for(int j=0;j<i;++j) {
                 math::PtEtaPhiMLorentzVectorD p4;
                 p4=(looseMuons[i]).p4+(looseMuons[j]).p4;
                 double invariantMass=p4.M2(); 
@@ -278,12 +293,17 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 double deltaPhi=abs((looseMuons[i]).phi-(looseMuons[j]).phi);
                 deltaEta_->Fill(deltaEta);
                 deltaPhi_->Fill(deltaPhi);
-                double etSum=0;
     //        for(auto it=emEt_->begin();it!=emEt_->end();++it) {
                 if((looseMuons[i]).charge!=(looseMuons[j]).charge) { //Opposite sign dimuon
         //            etSumOppositeSignDimuons_->Fill(etSum);
                     oppositeSignDimuonInvariantMass_->Fill(invariantMass);
-                
+                    auto runH=invariantMassByRun_.find(*runNumber_);
+
+
+
+
+                    if(runH!=invariantMassByRun_.end())
+                        (runH->second)->Fill(invariantMass);
                 } else { //Same sign dimuon
         //            etSumSameSignDimuons_->Fill(etSum);
                     if(looseMuons[i].charge > 0) {
