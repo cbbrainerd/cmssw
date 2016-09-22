@@ -169,7 +169,7 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    hadEtH_=fs->make<TH1D>("hadEtH_","hadEt Of Each Tower",1000,0,100);
    numberCaloTowers_=fs->make<TH1D>("numberCaloTowers_","Number of Calo Towers per Event",5001,-.5,5000.5);
 //   information_=fs->make<TObjString>("Cuts: Both muons loose, >= 1GeV pT, at least one muon >= 10GeV pT. Both muon eta < 2.4. Exactly two muons pass cuts. Version 6.");
-    information_=fs->make<TObjString>("v7. Cuts: Both muons loose, no pT/eta cuts. Require exactly two loose muons, with dimuon mass between 80 and 100.");
+    information_=fs->make<TObjString>("v8. Cuts: Both muons loose, no pT/eta cuts. At least two muons- fill invariant mass for EVERY COMBINATION. No further cuts.");
 }
 
 
@@ -253,20 +253,10 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    numberCaloTowers_->Fill(numCaloTowers);
    numberMuons_->Fill(numMuons);
    numberLooseMuons_->Fill(numLooseMuons);
-   if(numLooseMuons == 2) { //For now look at events with only two muons
+   if(numLooseMuons >= 2) { //Events with AT LEAST 2 muons
 /*        if(looseMuons[0].pt < 10 && looseMuons[1].pt < 10)
             return; */
-        math::PtEtaPhiMLorentzVectorD p4;
-        p4=(looseMuons[0]).p4+(looseMuons[1]).p4;
-        double invariantMass=p4.M2(); 
-        if(invariantMass<80 || invariantMass>100)
-            return;
-        double deltaEta=abs((looseMuons[0]).eta-(looseMuons[1]).eta);
-        double deltaPhi=abs((looseMuons[0]).phi-(looseMuons[1]).phi);
-        deltaEta_->Fill(deltaEta);
-        deltaPhi_->Fill(deltaPhi);
         double etSum=0;
-//        for(auto it=emEt_->begin();it!=emEt_->end();++it) {
         for(int i=0;i!=numCaloTowers;++i) {
             etSum+=(*emEt_)[i];
             caloTowerIetaH_->Fill((*caloTowerIeta_)[i]);
@@ -276,22 +266,37 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             emEtH_->Fill((*emEt_)[i]);
             hadEtH_->Fill((*hadEt_)[i]);
         }
-        if((looseMuons[0]).charge!=(looseMuons[1]).charge) { //Opposite sign dimuon
-            etSumOppositeSignDimuons_->Fill(etSum);
-            oppositeSignDimuonInvariantMass_->Fill(invariantMass);
-            
-        } else { //Same sign dimuon
-            etSumSameSignDimuons_->Fill(etSum);
-            if(looseMuons[0].charge > 0) {
-                positiveSignDimuonInvariantMass_->Fill(invariantMass);
-            } else {
-                negativeSignDimuonInvariantMass_->Fill(invariantMass);
+        etSumOppositeSignDimuons_->Fill(etSum); //NB: This is for all dimuons now, just too lazy to change the name
+        for(int i=1;i<numLooseMuons;++i) {
+            for(int j=0;j<i;++i) {
+                math::PtEtaPhiMLorentzVectorD p4;
+                p4=(looseMuons[i]).p4+(looseMuons[j]).p4;
+                double invariantMass=p4.M2(); 
+    //        if(invariantMass<80 || invariantMass>100)
+    //            return;
+                double deltaEta=abs((looseMuons[i]).eta-(looseMuons[j]).eta);
+                double deltaPhi=abs((looseMuons[i]).phi-(looseMuons[j]).phi);
+                deltaEta_->Fill(deltaEta);
+                deltaPhi_->Fill(deltaPhi);
+                double etSum=0;
+    //        for(auto it=emEt_->begin();it!=emEt_->end();++it) {
+                if((looseMuons[i]).charge!=(looseMuons[j]).charge) { //Opposite sign dimuon
+        //            etSumOppositeSignDimuons_->Fill(etSum);
+                    oppositeSignDimuonInvariantMass_->Fill(invariantMass);
+                
+                } else { //Same sign dimuon
+        //            etSumSameSignDimuons_->Fill(etSum);
+                    if(looseMuons[i].charge > 0) {
+                        positiveSignDimuonInvariantMass_->Fill(invariantMass);
+                    } else {
+                        negativeSignDimuonInvariantMass_->Fill(invariantMass);
+                    }
+                    sameSignDimuonInvariantMass_->Fill(invariantMass);
+                }
             }
-            sameSignDimuonInvariantMass_->Fill(invariantMass);
         }
-   }
+    }
 }
-
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
