@@ -16,8 +16,9 @@ def MC(config):
     config=common(config)
     config.General.requestName = 'DYToLLRunIISpring2016Analyzer'
     config.JobType.psetName = '../python/NtpAnalyzerMC_cfi.py'
-    config.Data.inputDataset = '/DYToLL_M_1_TuneCUETP8M1_13TeV_pythia8/cbrainer-DYToLLNtuplesRunIISpring2016-v8-fef2920ac3ef3d99cc54880fd410ec3e/USER'
-    config.Data.unitsPerJob = 100
+    config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/cbrainer-MCNtuples-v2-fef2920ac3ef3d99cc54880fd410ec3e/USER'
+    #'/DYToLL_M_1_TuneCUETP8M1_13TeV_pythia8/cbrainer-DYToLLNtuplesRunIISpring2016-v8-fef2920ac3ef3d99cc54880fd410ec3e/USER'
+    config.Data.unitsPerJob = 50
     config.Data.outputDatasetTag = 'DYToLLRunIISpring2016Analysis'
     return config
 def common(config):

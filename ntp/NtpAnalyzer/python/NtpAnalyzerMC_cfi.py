@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-import system 
 
 process=cms.Process("NtpAnalyzerMC")
 

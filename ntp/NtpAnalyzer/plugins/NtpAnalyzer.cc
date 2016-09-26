@@ -176,7 +176,7 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    hadEtH_=fs->make<TH1D>("hadEtH_","hadEt Of Each Tower",1000,0,100);
    numberCaloTowers_=fs->make<TH1D>("numberCaloTowers_","Number of Calo Towers per Event",5001,-.5,5000.5);
 //   information_=fs->make<TObjString>("Cuts: Both muons loose, >= 1GeV pT, at least one muon >= 10GeV pT. Both muon eta < 2.4. Exactly two muons pass cuts. Version 6.");
-    information_=fs->make<TH1I>("information_","v8. Cuts: Both muons loose, no pT/eta cuts. At least two muons- fill invariant mass for EVERY COMBINATION. No further cuts.",1,0,1);
+    information_=fs->make<TH1I>("information_","v10. Cuts: Both muons loose, pT>10GeV, |eta|<2.4. At least two muons- fill invariant mass for EVERY COMBINATION. No further cuts.",1,0,1);
     for(unsigned int i : availableRunNumbers) {
         std::string tmp=std::to_string(i);
         const char* name=tmp.c_str();
@@ -253,7 +253,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         muonPtH_->Fill((*muonPt_)[i]);
         muonTypeH_->Fill(*it);
         if(isLooseMuon(*it)) { //Quality cut 
-            if(/*((*muonPt_)[i] > 1)&&((*muonEta_)[i] < 2.4)*/true) { //Suggested cuts in SWGuideMuonIdRun2 (What is Loose PF comb. rel. isolation?)
+            if(((*muonPt_)[i] > 10)&&(abs((*muonEta_)[i]) < 2.4)) { //Suggested cuts in SWGuideMuonIdRun2 (What is Loose PF comb. rel. isolation?)
                 looseMuons.push_back(muon((*muonPt_)[i],(*muonEta_)[i],(*muonPhi_)[i],(*muonCharge_)[i],(*muonType_)[i]));
                 looseMuonPt_->Fill((*muonPt_)[i]);
                 muonEtaH_->Fill((*muonEta_)[i]);
