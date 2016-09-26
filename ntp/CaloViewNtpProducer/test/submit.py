@@ -2,6 +2,9 @@
 #Run as "python submit.py"
 #Be sure to source /cvmfs/cms.cern.ch/crab3/crab.sh
 
+#Version control not updated. Don't use this yet
+raise SystemExit
+
 import subprocess
 import pickle
 try:

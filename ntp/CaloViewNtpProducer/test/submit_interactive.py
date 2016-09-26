@@ -1,3 +1,4 @@
+#!/bin/env python
 #Submits crab jobs
 #Run as "python submit.py"
 #Be sure to source /cvmfs/cms.cern.ch/crab3/crab.sh
@@ -60,6 +61,7 @@ def interactiveOptionsSubmit(config,runType):
         except GenericSubmissionException:
             print runType,"submission failed."
             allGood=False
+    directory="./"+config.General.workArea+"/"+config.General.requestName+"-v"+newVersion
     return allGood
 
 newHash=subprocess.check_output(["git","rev-parse","HEAD"])
@@ -91,10 +93,12 @@ if __name__ == '__main__':
 
     if isMC:
         mcSubmit=interactiveOptionsSubmit(crab.MC(crab.defaultConfig),"MC")
+        mcDirectory=directory
 
     if isData:
         dataSubmit=interactiveOptionsSubmit(crab.Data(crab.defaultConfig),"Data")
-    metaData=(newHash,isMC,mcSubmit,isData,dataSubmit)
+        dataDirectory=directory
+    metaData=(newHash,isMC,mcSubmit,isData,dataSubmit,mcDirectory if mcSubmit else "",dataDirectory if dataSubmit else "")
     versions['v'+str(newVersion)]=metaData
     f=open("versionControl.p",'w')
     pickle.dump(versions,f)
