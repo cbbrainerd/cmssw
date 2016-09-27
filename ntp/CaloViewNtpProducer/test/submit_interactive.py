@@ -9,21 +9,21 @@ import re
 
 import sys
 
-skipGitStatusCheck=True #Hard-coded in for now
-peeked=False
+skipGitStatusCheck=True #Default behavior. Can force the check with a flag
 
-def parse(argument,nextArgument):
-    return False
-for index,argument in enumerate(sys.argv):
-    if peeked:
-        peeked=False
-        continue
-    if(index < len(sys.argv)-1):
-        peeked=parse(argument,sys.argv[index+1])
-    else:
-        parse(argument,'')
+crabCmdOpts=[]
 
-    
+def parse(argument): #Parse command line arguments. Return false if they are not script-specific
+    if(argument=='--forceGitCheck' or argument=='-g'):
+        skipGitStatusCheck=False
+#    elif ():
+    else:   
+        return false
+
+for arg in sys.argv[1:]:
+    if not parse(arg):
+        cramCmdOpts.append(arg)
+
 class GenericSubmissionException(Exception):
     def __init__(self,value):
         self.value = value
@@ -57,12 +57,11 @@ def interactiveOptionsSubmit(config,runType):
     if allGood:
         print "Submitting",runType,"crab job..."
         try:
-            submit(config)
+            submit(config,crabCmdOpts)
         except GenericSubmissionException:
             print runType,"submission failed."
             allGood=False
-    directory="./"+config.General.workArea+"/"+config.General.requestName+"-v"+newVersion
-    return allGood
+    return "./"+config.General.workArea+"/crab_"+config.General.requestName if allGood else ''
 
 newHash=subprocess.check_output(["git","rev-parse","HEAD"])
 
@@ -71,11 +70,11 @@ if __name__ == '__main__':
     from CRABClient.ClientExceptions import ClientException
     from httplib import HTTPException
     
-    def submit(config):
+    def submit(config,crabCmdOpts):
         config.General.requestName = config.General.requestName+'-v'+str(newVersion)
         config.Data.outputDatasetTag = config.Data.outputDatasetTag+'-v'+str(newVersion)
         try:
-            crabCommand('submit',config=config)
+            crabCommand('submit',config=config,*crabCmdOpts)
         except HTTPException as hte:
             print "Failed submitting task: %s" % (hte.headers)
             raise GenericSubmissionException
@@ -90,15 +89,17 @@ if __name__ == '__main__':
 
     mcSubmit=False
     dataSubmit=False  
+    mcDirectory=''
+    dataDirectory=''
 
     if isMC:
-        mcSubmit=interactiveOptionsSubmit(crab.MC(crab.defaultConfig),"MC")
-        mcDirectory=directory
+        mcDirectory=interactiveOptionsSubmit(crab.MC(crab.defaultConfig),"MC")
+        mcSubmit=bool(mcDirectory)
 
     if isData:
-        dataSubmit=interactiveOptionsSubmit(crab.Data(crab.defaultConfig),"Data")
-        dataDirectory=directory
-    metaData=(newHash,isMC,mcSubmit,isData,dataSubmit,mcDirectory if mcSubmit else "",dataDirectory if dataSubmit else "")
+        dataDirectory=interactiveOptionsSubmit(crab.Data(crab.defaultConfig),"Data")
+        dataSubmit=bool(dataDirectory)
+    metaData=(newHash,isMC,mcSubmit,isData,dataSubmit,mcDirectory,dataDirectory)
     versions['v'+str(newVersion)]=metaData
     f=open("versionControl.p",'w')
     pickle.dump(versions,f)
