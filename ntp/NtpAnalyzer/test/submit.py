@@ -2,9 +2,12 @@
 #Run as "python submit.py"
 #Be sure to source /cvmfs/cms.cern.ch/crab3/crab.sh
 
+print 'Deprecated. Use "submit_interactive.py" instead.'
+raise SystemExit
+
 import subprocess
 import pickle
-newVersion=6
+newVersion=10
 if __name__ == '__main__':
     from CRABAPI.RawCommand import crabCommand
     from CRABClient.ClientExceptions import ClientException

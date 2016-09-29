@@ -32,5 +32,5 @@ process.ntptow=ntp.ntptow
 process.ntpmu=ntp.ntpmu
 
 process.p = cms.Path(process.ntpmu*process.ntptow)
-process.output=cms.OutputModule("PoolOutputModule",fileName=cms.untracked.string("file:NtpData.root"),SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring('p')),outputCommands=cms.untracked.vstring('keep *_*_*_ntupler'),dropMetaData=cms.untracked.string('ALL'))
+process.output=cms.OutputModule("PoolOutputModule",fileName=cms.untracked.string("file:NtpData.root"),SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring('p')),outputCommands=cms.untracked.vstring('keep *_*_*_ntupler','keep *_TriggerResults_*_*'),dropMetaData=cms.untracked.string('ALL'))
 process.out=cms.EndPath(process.output)

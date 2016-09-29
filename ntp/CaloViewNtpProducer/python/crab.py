@@ -16,7 +16,7 @@ def Data(config):
     config=common(config)
     config.General.requestName = 'DYMuMu_Data_Ntupler'
     config.JobType.psetName = '../python/NtpData_cfi.py'
-    config.Data.inputDataset = '/DoubleMuon/Run2016E-PromptReco-v2/RECO'
+    config.Data.inputDataset = '/DoubleMuon/Run2016D-PromptReco-v2/RECO'
     config.Data.unitsPerJob = 100
     config.Data.outputDatasetTag = 'DataNtuples'
     config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-277148_13TeV_PromptReco_Collisions16_JSON.txt'
@@ -25,8 +25,8 @@ def MC(config):
     config=common(config)
     config.General.requestName = 'DYMuMu_MC_Ntupler'
     config.JobType.psetName = '../python/NtpMC_cfi.py'
-    config.Data.inputDataset = '/DYToLL_M_1_TuneCUETP8M1_13TeV_pythia8/RunIISpring16DR80-FlatPU8to37HcalNZSRAW_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/GEN-SIM-RAW'
-    config.Data.unitsPerJob = 100
+    config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer15GS-MCRUN2_71_V1_ext1-v1/GEN-SIM'
+    config.Data.unitsPerJob = 400
     config.Data.outputDatasetTag = 'MCNtuples'
     return config
 def common(config):

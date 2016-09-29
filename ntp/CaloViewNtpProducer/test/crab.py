@@ -28,9 +28,9 @@ if(len(sys.argv) == 1):
     exit()
 command=sys.argv[1]
 print sys.argv
+crabCmdOpts=[]
 if(len(sys.argv) > 2):
     lastVersion=[]
-    crabCmdOpts=[]
     for x in sys.argv[2:]:
         try:
             int(x)
@@ -70,7 +70,7 @@ if (command=="submit"):
     subprocess.Popen("python submit_interactive.py",shell=True)
     raise SystemExit
 print "Git hashes of given submits: %s." % lastHash
-print "Running command `crab %s` on %s." % (command,("MC and Data" if (isMC and isData) else ("MC" if isMC else ("Data" if isData else "nothing."))))
+print "Running command `crab %s%s` on %s." % (command,' '+' '.join(crabCmdOpts) if crabCmdOpts else '',("MC and Data" if (isMC and isData) else ("MC" if isMC else ("Data" if isData else "nothing."))))
 
 directory='./Ntupler/crab_'
 version='-v'+str(lastVersion)
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     from httplib import HTTPException
     
     def job(directory,command,crabCmdOpts):
-        print 'Running command "crab %s %s":' % ((command+" -d "+directory),crabCmdOpts)
+        print 'Running command "crab %s%s":' % ((command+" -d "+directory),' '+' '.join(crabCmdOpts) if crabCmdOpts else '')
         try:
             crabCommand(command,d=directory,*crabCmdOpts)
         except HTTPException as hte:

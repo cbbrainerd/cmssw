@@ -57,7 +57,7 @@ process.raw2digi_step = cms.Path(process.RawToDigi)
 process.reconstruction_step = cms.Path(process.reconstruction)
 
 process.p = cms.Path(process.ntpmu*process.ntptow)
-process.output=cms.OutputModule("PoolOutputModule",fileName=cms.untracked.string("file:NtpMC.root"),SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring('p')),outputCommands=cms.untracked.vstring('keep *_ntpmu_*_ntupler','keep *_ntptow_*_ntupler'),dropMetaData=cms.untracked.string('ALL'))
+process.output=cms.OutputModule("PoolOutputModule",fileName=cms.untracked.string("file:NtpMC.root"),SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring('p')),outputCommands=cms.untracked.vstring('keep *_ntpmu_*_ntupler','keep *_ntptow_*_ntupler','keep *_TriggerResults_*_*'),dropMetaData=cms.untracked.string('ALL'))
 process.out=cms.EndPath(process.output)
 
 process.schedule=cms.Schedule(process.raw2digi_step,process.reconstruction_step,process.p,process.out)
