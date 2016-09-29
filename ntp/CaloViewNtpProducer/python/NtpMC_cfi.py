@@ -27,6 +27,7 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
 #   'root://cmsxrootd.fnal.gov//store/mc/RunIISpring16MiniAODv2/DYToLL_M_1_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/FlatPU8to37HcalNZSRAW_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/00000/00B18E03-2933-E611-B8D7-0025905A60DA.root'
 #    'root://cmsxrootd.fnal.gov//store/mc/RunIISpring16DR80/DYToLL_M_1_TuneCUETP8M1_13TeV_pythia8/GEN-SIM-RAW/FlatPU8to37HcalNZSRAW_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/00000/00617C68-3632-E611-B6C5-0CC47A4D7644.root'   
+    '/store/mc/RunIISpring16DR80/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RAWAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_v3_ext1-v1/00000/00088582-4239-E611-97B2-0CC47A78A440.root'
     ),
     secondaryFileNames = cms.untracked.vstring()
 )
