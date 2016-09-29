@@ -46,9 +46,11 @@ if not skipGitStatusCheck:
         print "Uncommitted changes to tracked files."
         exit()
 
-def interactiveOptionsSubmit(config,runType):
+def interactiveOptionsSubmit(config,runType,dataEntry=False):
     allGood=True
-    dataset=raw_input("Type the dataset to run over if it is not default for the "+runType+" run.\n")
+    dataset=''
+    if dataEntry:
+        dataset=raw_input("Type the dataset to run over if it is not default for the "+runType+" run.\n")
     if(dataset!=''):
         try:
             crab.changeDataset(config,dataset)
