@@ -159,6 +159,7 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    etSumSameSignDimuons_=fs->make<TH1D>("etSumSameSignDimuons_","EtSum of Same Sign Dimuons",1000,0,1000);
    sameSignDimuonInvariantMass_=fs->make<TH1D>("sameSignDimuonInvariantMass_","Invariant Mass for Same Sign Dimuons",10000,0,2000);
    oppositeSignDimuonInvariantMass_=fs->make<TH1D>("oppositeSignDimuonInvariantMass_","Invariant Mass for Opposite Sign Dimuons",10000,0,2000);
+   oppositeSignDimuonInvariantMassWithJustTwoMuons_=fs->make<TH1D>("oppositeSignDimuonInvariantMass_","Invariant Mass for Opposite Sign Dimuons",10000,0,2000);
    positiveSignDimuonInvariantMass_=fs->make<TH1D>("positiveSignDimuonInvariantMass_","Invariant Mass for Positive Sign Dimuons",10000,0,2000);
    negativeSignDimuonInvariantMass_=fs->make<TH1D>("negativeSignDimuonInvariantMass_","Invariant Mass for Negative Sign Dimuons",10000,0,2000);
    muonPtH_=fs->make<TH1D>("muonPtH_","Muon Pt",1000,0,1000);
@@ -282,20 +283,23 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             hadEtH_->Fill((*hadEt_)[i]);
         }
         etSumOppositeSignDimuons_->Fill(etSum); //NB: This is for all dimuons now, just too lazy to change the name
-        for(int i=1;i<numLooseMuons;++i) {
-            for(int j=0;j<i;++j) {
+        for(auto i=looseMuons.begin();i!=looseMuons.end();++i) {
+            for(int j=looseMuons.begin();j!=i;++j) {
                 math::PtEtaPhiMLorentzVectorD p4;
-                p4=(looseMuons[i]).p4+(looseMuons[j]).p4;
-                double invariantMass=p4.M2(); 
+                p4=(*i).p4+(*j).p4;
+                double invariantMass=p4.M(); 
     //        if(invariantMass<80 || invariantMass>100)
     //            return;
-                double deltaEta=abs((looseMuons[i]).eta-(looseMuons[j]).eta);
-                double deltaPhi=abs((looseMuons[i]).phi-(looseMuons[j]).phi);
+                double deltaEta=abs((*i).eta-(*j).eta);
+                double deltaPhi=abs((*i).phi-(*j).phi);
                 deltaEta_->Fill(deltaEta);
                 deltaPhi_->Fill(deltaPhi);
     //        for(auto it=emEt_->begin();it!=emEt_->end();++it) {
-                if((looseMuons[i]).charge!=(looseMuons[j]).charge) { //Opposite sign dimuon
+                if((*i).charge!=(*j).charge) { //Opposite sign dimuon
         //            etSumOppositeSignDimuons_->Fill(etSum);
+                    if (numLooseMuons==2) {
+                        oppositeSignDimuonInvariantMassWithJustTwoMuons_->Fill(invariantMass);
+                    }
                     oppositeSignDimuonInvariantMass_->Fill(invariantMass);
                     auto runH=invariantMassByRun_.find(*runNumber_);
 
@@ -306,7 +310,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                         (runH->second)->Fill(invariantMass);
                 } else { //Same sign dimuon
         //            etSumSameSignDimuons_->Fill(etSum);
-                    if(looseMuons[i].charge > 0) {
+                    if((*i).charge > 0) {
                         positiveSignDimuonInvariantMass_->Fill(invariantMass);
                     } else {
                         negativeSignDimuonInvariantMass_->Fill(invariantMass);

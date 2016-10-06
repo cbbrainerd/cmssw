@@ -7,7 +7,7 @@ def Data(config):
     config=common(config)
     config.General.requestName = 'DYMuMu_Data_Analyzer'
     config.JobType.psetName = '../python/NtpAnalyzerData_cfi.py'
-    config.Data.inputDataset = '/DoubleMuon/cbrainer-DoubleMuonNtuplerRun2016B-v10-3b7062a859ed6155359a055fc98137d8/USER'
+    config.Data.inputDataset = '/DoubleMuon/cbrainer-DataNtuples-v9-3b7062a859ed6155359a055fc98137d8/USER'
     config.Data.unitsPerJob = 100
     config.Data.outputDatasetTag = 'DYMuMu_Data_Analyzer'
 #    config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-277148_13TeV_PromptReco_Collisions16_JSON.txt'

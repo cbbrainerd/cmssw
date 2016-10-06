@@ -84,7 +84,7 @@ if __name__ == '__main__':
             print "Failed submitting task: %s" % (cle)
             raise GenericSubmissionException
 
-    import ntp.CaloViewNtpProducer.crab as crab
+    import ../python/crab.py as crab
     submitType=raw_input("MC, Data, or Both?\n")
     isMC=(submitType=="MC" or submitType=="Both")
     isData=(submitType=="Data" or submitType=="Both")
