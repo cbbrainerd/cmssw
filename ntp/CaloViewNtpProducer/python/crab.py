@@ -26,7 +26,8 @@ def MC(config):
     config.General.requestName = 'DYMuMu_MC_Ntupler'
     config.JobType.psetName = '../python/NtpGENSIM_cfi.py'
     config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer15GS-MCRUN2_71_V1_ext1-v1/GEN-SIM'
-    config.Data.unitsPerJob = 400
+    config.Data.unitsPerJob = 10
+    config.Data.totalUnits = 1000
     config.Data.outputDatasetTag = 'MCNtuples'
     return config
 def common(config):
