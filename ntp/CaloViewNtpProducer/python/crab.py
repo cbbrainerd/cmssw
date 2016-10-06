@@ -24,8 +24,9 @@ def Data(config):
 def MC(config):
     config=common(config)
     config.General.requestName = 'DYMuMu_MC_Ntupler'
-    config.JobType.psetName = '../python/NtpGENSIM_cfi.py'
-    config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer15GS-MCRUN2_71_V1_ext1-v1/GEN-SIM'
+    config.JobType.psetName = '../python/NtpMC_cfi.py'
+    config.Data.inputDataset = '/DYToLL_M_1_TuneCUETP8M1_13TeV_pythia8/RunIISpring16DR80-FlatPU8to37HcalNZSRAW_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/GEN-SIM-RAW'
+#'/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer15GS-MCRUN2_71_V1_ext1-v1/GEN-SIM'
     config.Data.unitsPerJob = 10
 #    config.Data.totalUnits = 1000
     config.Data.outputDatasetTag = 'MCNtuples'
