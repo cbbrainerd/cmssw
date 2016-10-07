@@ -7,16 +7,18 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #from ntp.NtpAnalyzer.DataFileList import filesList
-#from ntp.NtpAnalyzer.GetFiles import query
+from ntp.NtpAnalyzer.GetFiles import query
 
-#q_string="file dataset=/DoubleMuon/cbrainer-DoubleMuonNtuplerRun2016B-v10-3b7062a859ed6155359a055fc98137d8/USER instance=prod/phys03"
-#totalFiles=0 #0 for unlimited
-#listOfFiles=cms.untracked.vstring()
-#query(listOfFiles,q_string,totalFiles)
+q_string="file dataset=/DoubleMuon/cbrainer-DataNtuples-v9-3b7062a859ed6155359a055fc98137d8/USER instance=prod/phys03"
+totalFiles=0 #0 for unlimited
+listOfFiles=cms.untracked.vstring()
+listOfFiles=query(listOfFiles,q_string,totalFiles)
+print listOfFiles
 
 process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
-    fileNames = cms.untracked.vstring("file:./NtpData_1.root")
+#    fileNames = cms.untracked.vstring("file:./NtpData_1.root")
+    fileNames=listOfFiles
 )
 
 process.TFileService = cms.Service("TFileService",
@@ -35,30 +37,7 @@ process.analyze = cms.EDAnalyzer('NtpAnalyzer',
     caloTowerIphi=cms.InputTag("ntptow","caloTowerIphi"),
     muonCharge=cms.InputTag("ntpmu","muonCharge"),
     muonType=cms.InputTag("ntpmu","muonType"),
-    listOfRuns=cms.vuint32([
-        276831,
-        276834,
-        276870,
-        276935,
-        276940,
-        276946,
-        276947,
-        276948,
-        276950,
-        277069,
-        277070,
-        277071,
-        277072,
-        277073,
-        277076,
-        277087,
-        277094,
-        277096,
-        277112,
-        277126,
-        277127,
-        277148]
-    )
+    listOfRuns=cms.vuint32()
 )
 
 process.p = cms.Path(process.analyze)

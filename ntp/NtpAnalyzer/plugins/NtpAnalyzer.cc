@@ -100,6 +100,7 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       TH1D *etSumSameSignDimuons_;
       TH1D *sameSignDimuonInvariantMass_;
       TH1D *oppositeSignDimuonInvariantMass_;
+      TH1D *oppositeSignDimuonInvariantMassWithJustTwoMuons_;
       TH1D *positiveSignDimuonInvariantMass_;
       TH1D *negativeSignDimuonInvariantMass_;
       TH1D *muonPtH_;
@@ -284,7 +285,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
         etSumOppositeSignDimuons_->Fill(etSum); //NB: This is for all dimuons now, just too lazy to change the name
         for(auto i=looseMuons.begin();i!=looseMuons.end();++i) {
-            for(int j=looseMuons.begin();j!=i;++j) {
+            for(auto j=looseMuons.begin();j!=i;++j) {
                 math::PtEtaPhiMLorentzVectorD p4;
                 p4=(*i).p4+(*j).p4;
                 double invariantMass=p4.M(); 
