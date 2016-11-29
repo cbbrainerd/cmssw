@@ -16,10 +16,9 @@ import FWCore.ParameterSet.Config as cms
 
 # DQM online L1 Trigger client modules
 from Configuration.Eras.Modifier_stage2L1Trigger_cff import stage2L1Trigger
-if stage2L1Trigger.isChosen():
-    from DQM.L1TMonitorClient.L1TStage2MonitorClient_cff import * 
-else:
-    from DQM.L1TMonitorClient.L1TMonitorClient_cff import *
+_importModule='DQM.L1TMonitorClient.L1TMonitorClient_cff' #import this for legacy
+stage2L1Trigger.toReplaceWith(_importModule,'DQM.L1TMonitorClient.L1TStage2MonitorClient_cff' #import this for stage2
+exec('from '+_importModule+' import *')
     # changes for offline environment
     
     # DTTF to offline configuration

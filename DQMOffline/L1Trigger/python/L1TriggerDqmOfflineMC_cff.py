@@ -22,12 +22,9 @@ l1TriggerDqmOffline.remove(l1TriggerEmulatorOnline)
 
 
 # do not run the emulator client in MC
-if stage2L1Trigger.isChosen():
-    l1TriggerDqmOfflineClient.remove(l1tStage2EmulatorMonitorClient)
-else:
-    l1TriggerDqmOfflineClient.remove(l1EmulatorMonitorClient)
-
-
+_removeModule='l1tEmulatorMonitorClient'
+stage2L1Trigger.toReplaceWith(_removeModule,'l1tStage2EmulatorMonitorClient') #Emulator client has a different name in stage2
+exec('l1TriggerDqmOfflineClient.remove('+_removeModule+')')
 
 # correct input tags for MC for the private unpacking
    
