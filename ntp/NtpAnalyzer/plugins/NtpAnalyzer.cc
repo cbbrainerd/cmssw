@@ -154,15 +154,16 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    usesResource("TFileService");
    edm::Service<TFileService> fs;
 //   tfile_=new TFile("Histograms.root","UPDATE");
+   //Idea: Multi cuts. Make subfolders with different cuts each- fill histogram in each directory with different cuts.
    numberMuons_=fs->make<TH1D>("numberMuons_","Number of Muons per Event",11,-.5,10.5);
    numberLooseMuons_=fs->make<TH1D>("numberLooseMuons_","Number of Loose Muons per Event",11,-.5,10.5);
    etSumOppositeSignDimuons_=fs->make<TH1D>("etSumOppositeSignDimuons_","EtSum of Opposite Sign Dimuons",1000,0,1000);
    etSumSameSignDimuons_=fs->make<TH1D>("etSumSameSignDimuons_","EtSum of Same Sign Dimuons",1000,0,1000);
-   sameSignDimuonInvariantMass_=fs->make<TH1D>("sameSignDimuonInvariantMass_","Invariant Mass for Same Sign Dimuons",10000,0,2000);
-   oppositeSignDimuonInvariantMass_=fs->make<TH1D>("oppositeSignDimuonInvariantMass_","Invariant Mass for Opposite Sign Dimuons",10000,0,2000);
-   oppositeSignDimuonInvariantMassWithJustTwoMuons_=fs->make<TH1D>("oppositeSignDimuonInvariantMass_","Invariant Mass for Opposite Sign Dimuons",10000,0,2000);
-   positiveSignDimuonInvariantMass_=fs->make<TH1D>("positiveSignDimuonInvariantMass_","Invariant Mass for Positive Sign Dimuons",10000,0,2000);
-   negativeSignDimuonInvariantMass_=fs->make<TH1D>("negativeSignDimuonInvariantMass_","Invariant Mass for Negative Sign Dimuons",10000,0,2000);
+   sameSignDimuonInvariantMass_=fs->make<TH1D>("sameSignDimuonInvariantMass_","Invariant Mass for Same Sign Dimuons",10000,0,1000);
+   oppositeSignDimuonInvariantMass_=fs->make<TH1D>("oppositeSignDimuonInvariantMass_","Invariant Mass for Opposite Sign Dimuons",10000,0,1000);
+   oppositeSignDimuonInvariantMassWithJustTwoMuons_=fs->make<TH1D>("oppositeSignDimuonInvariantMassWithJustTwoMuons_","Invariant Mass for Opposite Sign Dimuons",10000,0,1000);
+   positiveSignDimuonInvariantMass_=fs->make<TH1D>("positiveSignDimuonInvariantMass_","Invariant Mass for Positive Sign Dimuons",10000,0,1000);
+   negativeSignDimuonInvariantMass_=fs->make<TH1D>("negativeSignDimuonInvariantMass_","Invariant Mass for Negative Sign Dimuons",10000,0,1000);
    muonPtH_=fs->make<TH1D>("muonPtH_","Muon Pt",1000,0,1000);
    looseMuonPt_=fs->make<TH1D>("looseMuonPt_","Loose Muon Pt",1000,0,1000);
    muonEtaH_=fs->make<TH1D>("muonEtaH_","Loose Muon Eta",200,-3.2,3.2);
@@ -178,8 +179,8 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    hadEtH_=fs->make<TH1D>("hadEtH_","hadEt Of Each Tower",1000,0,100);
    numberCaloTowers_=fs->make<TH1D>("numberCaloTowers_","Number of Calo Towers per Event",5001,-.5,5000.5);
 //   information_=fs->make<TObjString>("Cuts: Both muons loose, >= 1GeV pT, at least one muon >= 10GeV pT. Both muon eta < 2.4. Exactly two muons pass cuts. Version 6.");
-    information_=fs->make<TH1I>("information_","v10. Cuts: Both muons loose, pT>10GeV, |eta|<2.4. At least two muons- fill invariant mass for EVERY COMBINATION. No further cuts.",1,0,1);
-    for(unsigned int i : availableRunNumbers) {
+   information_=fs->make<TH1I>("information_","Nv4. Cuts: Both muons loose, pT>10GeV, |eta|<2.4. Exactly TWO muons, cut on invariant mass from 80 to 100GeV",1,0,1);
+   for(unsigned int i : availableRunNumbers) {
         std::string tmp=std::to_string(i);
         const char* name=tmp.c_str();
         TH1D* tmpTH1D=fs->make<TH1D>(name,name,10000,0,2000);
@@ -270,7 +271,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    numberCaloTowers_->Fill(numCaloTowers);
    numberMuons_->Fill(numMuons);
    numberLooseMuons_->Fill(numLooseMuons);
-   if(numLooseMuons >= 2) { //Events with AT LEAST 2 muons
+   if(numLooseMuons == 2) { //Events with EXACTLY 2 muons
 /*        if(looseMuons[0].pt < 10 && looseMuons[1].pt < 10)
             return; */
         double etSum=0;
@@ -283,40 +284,36 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             emEtH_->Fill((*emEt_)[i]);
             hadEtH_->Fill((*hadEt_)[i]);
         }
-        etSumOppositeSignDimuons_->Fill(etSum); //NB: This is for all dimuons now, just too lazy to change the name
         for(auto i=looseMuons.begin();i!=looseMuons.end();++i) {
             for(auto j=looseMuons.begin();j!=i;++j) {
                 math::PtEtaPhiMLorentzVectorD p4;
                 p4=(*i).p4+(*j).p4;
                 double invariantMass=p4.M(); 
-    //        if(invariantMass<80 || invariantMass>100)
-    //            return;
+            if(invariantMass<80 || invariantMass>100)
+                return;
                 double deltaEta=abs((*i).eta-(*j).eta);
                 double deltaPhi=abs((*i).phi-(*j).phi);
                 deltaEta_->Fill(deltaEta);
                 deltaPhi_->Fill(deltaPhi);
     //        for(auto it=emEt_->begin();it!=emEt_->end();++it) {
                 if((*i).charge!=(*j).charge) { //Opposite sign dimuon
-        //            etSumOppositeSignDimuons_->Fill(etSum);
                     if (numLooseMuons==2) {
-                        oppositeSignDimuonInvariantMassWithJustTwoMuons_->Fill(invariantMass);
-                    }
-                    oppositeSignDimuonInvariantMass_->Fill(invariantMass);
-                    auto runH=invariantMassByRun_.find(*runNumber_);
-
-
-
-
-                    if(runH!=invariantMassByRun_.end())
-                        (runH->second)->Fill(invariantMass);
+                        oppositeSignDimuonInvariantMass_->Fill(invariantMass);
+                        etSumOppositeSignDimuons_->Fill(etSum);
+                        auto runH=invariantMassByRun_.find(*runNumber_);
+                        if(runH!=invariantMassByRun_.end())
+                            (runH->second)->Fill(invariantMass);
+                        }
                 } else { //Same sign dimuon
-        //            etSumSameSignDimuons_->Fill(etSum);
-                    if((*i).charge > 0) {
-                        positiveSignDimuonInvariantMass_->Fill(invariantMass);
-                    } else {
-                        negativeSignDimuonInvariantMass_->Fill(invariantMass);
+                    if(numLooseMuons==2) {
+                        etSumSameSignDimuons_->Fill(etSum);
+                        if((*i).charge > 0) {
+                            positiveSignDimuonInvariantMass_->Fill(invariantMass);
+                        } else {
+                            negativeSignDimuonInvariantMass_->Fill(invariantMass);
+                        }
+                        sameSignDimuonInvariantMass_->Fill(invariantMass);
                     }
-                    sameSignDimuonInvariantMass_->Fill(invariantMass);
                 }
             }
         }

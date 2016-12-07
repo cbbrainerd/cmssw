@@ -27,7 +27,6 @@ if(len(sys.argv) == 1):
     print 'python crab.py crabCommand [crabOptions] [version (just a number)]'
     exit()
 command=sys.argv[1]
-print sys.argv
 crabCmdOpts=[]
 if(len(sys.argv) > 2):
     lastVersion=[]
@@ -51,7 +50,6 @@ isMC=[]
 isData=[]
 MCDirectory=[]
 DataDirectory=[]
-print lastVersion
 for version in lastVersion:
     try:
         lastVersionInfo=versions['v'+str(version)]
@@ -88,7 +86,6 @@ if __name__ == '__main__':
             print "Failed submitting task: %s" % (hte.headers)
         except ClientException as cle:
             print "Failed submitting task: %s" % (cle)
-    print (isMC,isData,MCDirectory,DataDirectory)
     for isMC_,isData_,MCDirectory_,DataDirectory_ in zip(isMC,isData,MCDirectory,DataDirectory):
         if isMC_:
             job(MCDirectory_,command,crabCmdOpts)
