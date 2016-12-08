@@ -119,6 +119,9 @@ class NtpAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       TH1D *hadEtH_;
       TH1D *numberCaloTowers_;
 
+      TH2D *etSumInvariantMassOS_;
+      TH2D *etSumInvariantMassSS_;
+
       std::map<unsigned int,TH1D*> invariantMassByRun_;
       std::vector<unsigned int> availableRunNumbers;
       TH1I *information_;
@@ -178,8 +181,9 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    emEtH_=fs->make<TH1D>("emEtH_","emEt Of Each Tower",1000,0,100);
    hadEtH_=fs->make<TH1D>("hadEtH_","hadEt Of Each Tower",1000,0,100);
    numberCaloTowers_=fs->make<TH1D>("numberCaloTowers_","Number of Calo Towers per Event",5001,-.5,5000.5);
-//   information_=fs->make<TObjString>("Cuts: Both muons loose, >= 1GeV pT, at least one muon >= 10GeV pT. Both muon eta < 2.4. Exactly two muons pass cuts. Version 6.");
-   information_=fs->make<TH1I>("information_","Nv4. Cuts: Both muons loose, pT>10GeV, |eta|<2.4. Exactly TWO muons, cut on invariant mass from 80 to 100GeV",1,0,1);
+   etSumInvariantMassOS_=fs->make<TH2D>("etSumInvariantMassOS_","Et Sum vs Invariant Mass",5000,0,1000,1000,0,200);
+   etSumInvariantMassSS_=fs->make<TH2D>("etSumInvariantMassSS_","Et Sum vs Invariant Mass",5000,0,1000,1000,0,200);
+   information_=fs->make<TH1I>("information_","Nv4. Cuts: Both muons loose, pT>10GeV, |eta|<2.4. Exactly TWO muons",1,0,1);
    for(unsigned int i : availableRunNumbers) {
         std::string tmp=std::to_string(i);
         const char* name=tmp.c_str();
@@ -289,8 +293,6 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 math::PtEtaPhiMLorentzVectorD p4;
                 p4=(*i).p4+(*j).p4;
                 double invariantMass=p4.M(); 
-            if(invariantMass<80 || invariantMass>100)
-                return;
                 double deltaEta=abs((*i).eta-(*j).eta);
                 double deltaPhi=abs((*i).phi-(*j).phi);
                 deltaEta_->Fill(deltaEta);
@@ -300,6 +302,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                     if (numLooseMuons==2) {
                         oppositeSignDimuonInvariantMass_->Fill(invariantMass);
                         etSumOppositeSignDimuons_->Fill(etSum);
+                        etSumInvariantMassOS_->Fill(etSum,invariantMass);
                         auto runH=invariantMassByRun_.find(*runNumber_);
                         if(runH!=invariantMassByRun_.end())
                             (runH->second)->Fill(invariantMass);
@@ -307,6 +310,7 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                 } else { //Same sign dimuon
                     if(numLooseMuons==2) {
                         etSumSameSignDimuons_->Fill(etSum);
+                        etSumInvariantMassSS_->Fill(etSum,invariantMass);
                         if((*i).charge > 0) {
                             positiveSignDimuonInvariantMass_->Fill(invariantMass);
                         } else {
