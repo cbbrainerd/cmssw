@@ -38,39 +38,39 @@ l1t::L1DataEmulResult::L1DataEmulResult(bool event_match, int pt_mismatch, int e
 
 l1t::L1DataEmulResult::~L1DataEmulResult(){}
 
-bool l1t::L1DataEmulResult::Event_match(){
+bool l1t::L1DataEmulResult::Event_match() const {
   return event_match_;
 }
 
-std::string l1t::L1DataEmulResult::Collname(){
+std::string l1t::L1DataEmulResult::Collname() const {
   return collname_;
 }
 
-int l1t::L1DataEmulResult::PT_mismatch(){
+int l1t::L1DataEmulResult::PT_mismatch() const {
   return pt_mismatch_;
 }
 
-int l1t::L1DataEmulResult::ETAPHI_mismatch(){
+int l1t::L1DataEmulResult::ETAPHI_mismatch() const {
   return etaphi_mismatch_;
 }
 
-int l1t::L1DataEmulResult::N_mismatch(){
+int l1t::L1DataEmulResult::N_mismatch() const {
   return n_mismatch_;
 }
 
-int l1t::L1DataEmulResult::N_dataonly(){
+int l1t::L1DataEmulResult::N_dataonly() const {
   return n_dataonly_;
 }
 
-int l1t::L1DataEmulResult::N_emulonly(){
+int l1t::L1DataEmulResult::N_emulonly() const {
   return n_emulonly_;
 }
 
-int l1t::L1DataEmulResult::Add1(){
+int l1t::L1DataEmulResult::Add1() const {
   return add1_;
 }
 
-int l1t::L1DataEmulResult::Add2(){
+int l1t::L1DataEmulResult::Add2() const {
   return add2_;
 }
     
