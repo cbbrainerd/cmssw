@@ -18,15 +18,15 @@ namespace l1t {
 
   public:
 
-    bool Event_match();
-    std::string Collname();
-    int PT_mismatch();
-    int ETAPHI_mismatch();
-    int N_mismatch();
-    int N_dataonly();
-    int N_emulonly();
-    int Add1();
-    int Add2();
+    bool Event_match() const;
+    std::string Collname() const;
+    int PT_mismatch() const;
+    int ETAPHI_mismatch() const;
+    int N_mismatch() const;
+    int N_dataonly() const;
+    int N_emulonly() const;
+    int Add1() const;
+    int Add2() const;
 
   private:
 
