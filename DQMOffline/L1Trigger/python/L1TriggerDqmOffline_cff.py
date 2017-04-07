@@ -23,12 +23,20 @@ from L1Trigger.L1TGlobal.hackConditions_cff import *
 from L1Trigger.L1TMuon.hackConditions_cff import *
 from L1Trigger.L1TCalorimeter.hackConditions_cff import *
 # DQM Offline Step 1 cfi/cff imports
+
 #from DQMOffline.L1Trigger.L1TRate_Offline_cfi import *
 #from DQMOffline.L1Trigger.L1TSync_Offline_cfi import *
 #from DQMOffline.L1Trigger.L1TEmulatorMonitorOffline_cff import *  
 #l1TdeRCT.rctSourceData = 'gctDigis'
 
 from DQM.L1TMonitor.L1TMonitor_cff import *
+
+from DQMOffline.L1Trigger.L1TStage2CaloLayer2Offline_cfi import *
+l1tStage2CaloLayer2OfflineDQMEmu.stage2CaloLayer2JetSource=cms.InputTag("valCaloStage2Layer2Digis")
+l1tStage2CaloLayer2OfflineDQMEmu.stage2CaloLayer2EtSumSource=cms.InputTag("valCaloStage2Layer2Digis")
+from DQMOffline.L1Trigger.L1TEGammaOffline_cfi import *
+l1tEGammaOfflineDQMEmu.stage2CaloLayer2EGammaSource=cms.InputTag("valCaloStage2Layer2Digis")
+
 
 # DQM Offline Step 2 cfi/cff imports
 
@@ -94,16 +102,23 @@ l1tStage2EmulatorMonitorClient = cms.Sequence(
 # define sequences
 #
 
-Stage2l1TriggerOnline = cms.Sequence( 
+Stage2l1TriggerOnline = cms.Sequence(
                                stage2UnpackPath
                                 * l1tStage2OnlineDQM
                                 * dqmEnvL1T
                                )
+
+
+
                                     
 Stage2l1TriggerOffline = cms.Sequence(
-                                Stage2l1TriggerOnline
-                                 * dqmEnvL1TriggerReco
+                                Stage2l1TriggerOnline *
+                                dqmEnvL1TriggerReco *
+                                l1tStage2CaloLayer2OfflineDQM *
+                                l1tEGammaOfflineDQM
+
                                 )
+
  
 #
 from L1Trigger.Configuration.ValL1Emulator_cff import *
@@ -116,8 +131,11 @@ Stage2l1TriggerEmulatorOnline = cms.Sequence(
                                 )
 
 Stage2l1TriggerEmulatorOffline = cms.Sequence(
-                                Stage2l1TriggerEmulatorOnline                                
+                                Stage2l1TriggerEmulatorOnline +
+                                l1tStage2CaloLayer2OfflineDQMEmu +
+                                l1tEGammaOfflineDQMEmu
                                 )
+
 #
 
 # DQM Offline Step 1 sequence
