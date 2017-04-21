@@ -123,27 +123,27 @@ public:
 
   virtual void produce( edm::Event& iEvent, const edm::EventSetup& iSetup) override {
      if(eventInfo_ && parent_){ //Only records event info if it is requested AND it is the "parent"
-       std::auto_ptr<edm::EventNumber_t> event( new edm::EventNumber_t );
-       std::auto_ptr<unsigned int> run( new unsigned int );
-       std::auto_ptr<unsigned int> lumi( new unsigned int );
+       std::unique_ptr<edm::EventNumber_t> event( new edm::EventNumber_t );
+       std::unique_ptr<unsigned int> run( new unsigned int );
+       std::unique_ptr<unsigned int> lumi( new unsigned int );
        *event = iEvent.id().event();
        *run = iEvent.id().run();
        *lumi = iEvent.luminosityBlock();
-       iEvent.put( event, prefix_ + "EventNumber" );
-       iEvent.put( run, prefix_ + "RunNumber" );
-       iEvent.put( lumi, prefix_ + "LumiBlock" );
+       iEvent.put( std::move(event), prefix_ + "EventNumber" );
+       iEvent.put( std::move(run), prefix_ + "RunNumber" );
+       iEvent.put( std::move(lumi), prefix_ + "LumiBlock" );
      }
      edm::Handle<C> coll;
      iEvent.getByToken(srcToken_, coll);
      typename std::vector<std::pair<std::string, StringObjectFunction<typename C::value_type> > >::const_iterator
        q = tags_.begin(), end = tags_.end();
      for(;q!=end; ++q) {
-       std::auto_ptr<type> x(new type);
+       std::unique_ptr<type> x(new type);
        x->reserve(coll->size());
        for (typename C::const_iterator elem=coll->begin(); elem!=coll->end(); ++elem ) {
          x->push_back(q->second(*elem));
        }
-       iEvent.put(x, q->first); //Puts the product in the event.
+       iEvent.put(std::move(x), q->first); //Puts the product in the event.
      }
      childProducer_.produce(iEvent,iSetup);
   }
