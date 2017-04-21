@@ -217,32 +217,36 @@ NtpAnalyzerNtuple::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByToken(caloTowerIphiToken_,caloTowerIphi_);
    iEvent.getByToken(muonChargeToken_,muonCharge_);
    iEvent.getByToken(muonTypeToken_,muonType_);
-   std::vector<muon> looseMuons;
-   std::unique_ptr<std::vector<float> > looseMuonPt;
-   std::unique_ptr<std::vector<int> > looseMuonCharge;
-   std::unique_ptr<std::vector<double> > invariantMassV;
-   std::unique_ptr<std::vector<double> > deltaPhiV;
-   std::unique_ptr<std::vector<double> > deltaEtaV;
-   std::unique_ptr<double> etSum;
-   std::unique_ptr<double> hadEtSum;
-   *etSum=0;
-   *hadEtSum=0;
+   std::vector<muon> looseMuons;    
+   std::unique_ptr<std::vector<float> > looseMuonPt(new std::vector<float>);
+   std::unique_ptr<std::vector<int> > looseMuonCharge(new std::vector<int>);
+   std::unique_ptr<std::vector<double> > invariantMassV(new std::vector<double>);
+   std::unique_ptr<std::vector<double> > deltaPhiV(new std::vector<double>);
+   std::unique_ptr<std::vector<double> > deltaEtaV(new std::vector<double>);
+   std::unique_ptr<double> etSum(new double(0));
+   std::unique_ptr<double> hadEtSum(new double(0));
    int i=0;
    for(auto it=muonType_->begin();it!=muonType_->end();++it) {
+        std::cout << "Checking quality... ";
         if(isLooseMuon(*it)) { //Quality cut 
+        std::cout << "Done." << std::endl;
             if(((*muonPt_)[i] > 10)&&(abs((*muonEta_)[i]) < 2.4)) { //Suggested cuts in SWGuideMuonIdRun2 (What is Loose PF comb. rel. isolation?)
                 looseMuons.push_back(muon((*muonPt_)[i],(*muonEta_)[i],(*muonPhi_)[i],(*muonCharge_)[i],(*muonType_)[i]));
             }
         }
         ++i;
    }
+   std::cout << "Sorting... ";
    std::sort(looseMuons.rbegin(),looseMuons.rend());
+   std::cout << "Sorted." << std::endl;
    for(auto it=looseMuons.begin();it!=looseMuons.end();++it) {
        looseMuonPt->push_back(it->pt);
        looseMuonCharge->push_back(it->charge);
    }
+   std::cout << "Putting...";
    iEvent.put(std::move(looseMuonPt),"looseMuonPt");
    iEvent.put(std::move(looseMuonCharge),"looseMuonCharge");
+   std::cout << " Put.";
    int numCaloTowers=emEt_->size();
    for(int i=0;i!=numCaloTowers;++i) {
        (*etSum)+=(*emEt_)[i];
