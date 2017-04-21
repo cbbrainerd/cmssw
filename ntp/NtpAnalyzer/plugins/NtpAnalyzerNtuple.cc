@@ -227,26 +227,20 @@ NtpAnalyzerNtuple::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::unique_ptr<double> hadEtSum(new double(0));
    int i=0;
    for(auto it=muonType_->begin();it!=muonType_->end();++it) {
-        std::cout << "Checking quality... ";
         if(isLooseMuon(*it)) { //Quality cut 
-        std::cout << "Done." << std::endl;
             if(((*muonPt_)[i] > 10)&&(abs((*muonEta_)[i]) < 2.4)) { //Suggested cuts in SWGuideMuonIdRun2 (What is Loose PF comb. rel. isolation?)
                 looseMuons.push_back(muon((*muonPt_)[i],(*muonEta_)[i],(*muonPhi_)[i],(*muonCharge_)[i],(*muonType_)[i]));
             }
         }
         ++i;
    }
-   std::cout << "Sorting... ";
    std::sort(looseMuons.rbegin(),looseMuons.rend());
-   std::cout << "Sorted." << std::endl;
    for(auto it=looseMuons.begin();it!=looseMuons.end();++it) {
        looseMuonPt->push_back(it->pt);
        looseMuonCharge->push_back(it->charge);
    }
-   std::cout << "Putting...";
    iEvent.put(std::move(looseMuonPt),"looseMuonPt");
    iEvent.put(std::move(looseMuonCharge),"looseMuonCharge");
-   std::cout << " Put.";
    int numCaloTowers=emEt_->size();
    for(int i=0;i!=numCaloTowers;++i) {
        (*etSum)+=(*emEt_)[i];
