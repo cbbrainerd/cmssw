@@ -13,7 +13,7 @@
  * - types...: types that the ntupler can handle. Designed to use std::vector<T> generally, although an object with a compatible interface should work. Uses the reserve and push_back methods specifically. 
  * Generates a separate EDProducer for each type, and uses strings sent by python config file to determine what EDProducer to use
  * Example usage: 
-   * class MuonViewNtpProducer : public NtpProducer2<edm::View<reco::Muon>,std::vector<double>,std::vector<int>> {
+   * class MuonViewNtpProducer : public NtpProducer2<edm::View<reco::Muon>,std::vector<double>,std::vector<int> > {
    * public:
    *     MuonViewNtpProducer2(const edm::ParameterSet& par) : NtpProducer2(par,std::string("doubleVector"),std::string("intVector")) {}
    * };
