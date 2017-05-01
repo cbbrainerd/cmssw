@@ -37,7 +37,7 @@ def customise(process):
     from L1Trigger.Configuration.customiseReEmul import L1TReEmulFromRAW 
     process = L1TReEmulFromRAW(process)
     #Put all together into one path, so that reco does not run on non-fat events
-    process.p=cms.Path( process.hltFatEventFilters*
+    process.p=cms.Path( #process.hltFatEventFilters*
     			process.RawToDigi*
     			process.reconstruction*
     			process.DQMOffline*			

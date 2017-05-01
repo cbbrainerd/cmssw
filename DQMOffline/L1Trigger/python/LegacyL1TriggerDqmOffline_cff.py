@@ -45,94 +45,120 @@ dqmEnvL1TEMU.subSystemFolder = 'L1TEMU'
 from DQMOffline.L1Trigger.L1TRate_Offline_cfi import *
 from DQMOffline.L1Trigger.L1TSync_Offline_cfi import *
 from DQMOffline.L1Trigger.L1TEmulatorMonitorOffline_cff import *  
-l1TdeRCT.rctSourceData = 'gctDigis'
 
 # DQM Offline Step 2 cfi/cff imports
 from DQMOffline.L1Trigger.L1TEmulatorMonitorClientOffline_cff import *
 
 
 # Stage1 customization
-l1TdeRCT.rctSourceData = 'gctDigis'
-l1TdeRCTfromRCT.rctSourceData = 'gctDigis'
-l1tRct.rctSource = 'gctDigis'
-l1tRctfromRCT.rctSource = 'gctDigis'
-l1tPUM.regionSource = cms.InputTag("gctDigis")
+RunIl1TdeRCT = l1TdeRCT.clone()
+RunIl1TdeRCT.rctSourceData = 'gctDigis'
 
-l1tStage1Layer2.gctCentralJetsSource = cms.InputTag("gctDigis","cenJets")
-l1tStage1Layer2.gctForwardJetsSource = cms.InputTag("gctDigis","forJets")
-l1tStage1Layer2.gctTauJetsSource = cms.InputTag("gctDigis","tauJets")
-l1tStage1Layer2.gctIsoTauJetsSource = cms.InputTag("","")       
-l1tStage1Layer2.gctEnergySumsSource = cms.InputTag("gctDigis")
-l1tStage1Layer2.gctIsoEmSource = cms.InputTag("gctDigis","isoEm")
-l1tStage1Layer2.gctNonIsoEmSource = cms.InputTag("gctDigis","nonIsoEm")
-l1tStage1Layer2.stage1_layer2_ = cms.bool(False)
+RunIl1TdeRCTfromRCT = l1TdeRCTfromRCT.clone()
+RunIl1TdeRCTfromRCT.rctSourceData = 'gctDigis'
 
-dqmL1ExtraParticlesStage1.etTotalSource = 'gctDigis'
-dqmL1ExtraParticlesStage1.nonIsolatedEmSource = 'gctDigis:nonIsoEm'
-dqmL1ExtraParticlesStage1.etMissSource = 'gctDigis'
-dqmL1ExtraParticlesStage1.htMissSource = 'gctDigis'
-dqmL1ExtraParticlesStage1.forwardJetSource = 'gctDigis:forJets'
-dqmL1ExtraParticlesStage1.centralJetSource = 'gctDigis:cenJets'
-dqmL1ExtraParticlesStage1.tauJetSource = 'gctDigis:tauJets'
-dqmL1ExtraParticlesStage1.isolatedEmSource = 'gctDigis:isoEm'
-dqmL1ExtraParticlesStage1.etHadSource = 'gctDigis'
-dqmL1ExtraParticlesStage1.hfRingEtSumsSource = 'gctDigis'
-dqmL1ExtraParticlesStage1.hfRingBitCountsSource = 'gctDigis'
-l1ExtraDQMStage1.stage1_layer2_ = cms.bool(False)
-l1ExtraDQMStage1.L1ExtraIsoTauJetSource_ = cms.InputTag("fake")
+RunIl1tRct = l1tRct.clone()
+RunIl1tRct.rctSource = 'gctDigis'
 
-l1compareforstage1.GCTsourceData = cms.InputTag("gctDigis")
-l1compareforstage1.GCTsourceEmul = cms.InputTag("valGctDigis")
-l1compareforstage1.stage1_layer2_ = cms.bool(False)
+RunIl1tRctfromRCT = l1tRctfromRCT.clone()
+RunIl1tRctfromRCT.rctSource = 'gctDigis'
 
-valStage1GtDigis.GctInputTag = 'gctDigis'
+RunIl1tPUM = l1tPUM.clone()
+RunIl1tPUM.regionSource = cms.InputTag("gctDigis")
 
+RunIl1tStage1Layer2 = l1tStage1Layer2.clone()
+RunIl1tStage1Layer2.gctCentralJetsSource = cms.InputTag("gctDigis","cenJets")
+RunIl1tStage1Layer2.gctForwardJetsSource = cms.InputTag("gctDigis","forJets")
+RunIl1tStage1Layer2.gctTauJetsSource = cms.InputTag("gctDigis","tauJets")
+RunIl1tStage1Layer2.gctIsoTauJetsSource = cms.InputTag("","")       
+RunIl1tStage1Layer2.gctEnergySumsSource = cms.InputTag("gctDigis")
+RunIl1tStage1Layer2.gctIsoEmSource = cms.InputTag("gctDigis","isoEm")
+RunIl1tStage1Layer2.gctNonIsoEmSource = cms.InputTag("gctDigis","nonIsoEm")
+RunIl1tStage1Layer2.stage1_layer2_ = cms.bool(False)
+
+RunIdqmL1ExtraParticlesStage1 = dqmL1ExtraParticlesStage1.clone()
+RunIdqmL1ExtraParticlesStage1.etTotalSource = 'gctDigis'
+RunIdqmL1ExtraParticlesStage1.nonIsolatedEmSource = 'gctDigis:nonIsoEm'
+RunIdqmL1ExtraParticlesStage1.etMissSource = 'gctDigis'
+RunIdqmL1ExtraParticlesStage1.htMissSource = 'gctDigis'
+RunIdqmL1ExtraParticlesStage1.forwardJetSource = 'gctDigis:forJets'
+RunIdqmL1ExtraParticlesStage1.centralJetSource = 'gctDigis:cenJets'
+RunIdqmL1ExtraParticlesStage1.tauJetSource = 'gctDigis:tauJets'
+RunIdqmL1ExtraParticlesStage1.isolatedEmSource = 'gctDigis:isoEm'
+RunIdqmL1ExtraParticlesStage1.etHadSource = 'gctDigis'
+RunIdqmL1ExtraParticlesStage1.hfRingEtSumsSource = 'gctDigis'
+RunIdqmL1ExtraParticlesStage1.hfRingBitCountsSource = 'gctDigis'
+RunIl1ExtraDQMStage1 = l1ExtraDQMStage1.clone()
+RunIl1ExtraDQMStage1.stage1_layer2_ = cms.bool(False)
+RunIl1ExtraDQMStage1.L1ExtraIsoTauJetSource_ = cms.InputTag("fake")
+
+RunIl1compareforstage1 = l1compareforstage1.clone()
+RunIl1compareforstage1.GCTsourceData = cms.InputTag("gctDigis")
+RunIl1compareforstage1.GCTsourceEmul = cms.InputTag("valGctDigis")
+RunIl1compareforstage1.stage1_layer2_ = cms.bool(False)
+
+RunIl1TdeStage1Layer2 = l1TdeStage1Layer2.clone()
+RunIl1TdeStage1Layer2.DataEmulCompareSource = cms.InputTag("RunIl1compareforstage1")
+
+RunIvalStage1GtDigis = valStage1GtDigis.clone()
+RunIvalStage1GtDigis.GctInputTag = 'gctDigis'
+
+RunIl1Stage1GtHwValidation = l1Stage1GtHwValidation.clone()
+RunIl1Stage1GtHwValidation.L1GtEmulDaqInputTag = cms.InputTag("RunIvalStage1GtDigis")
+RunIl1Stage1GtHwValidation.L1GtEmulEvmInputTag = cms.InputTag("RunIl1Stage1GtHwValidation")
 
 from Configuration.Eras.Modifier_stage1L1Trigger_cff import stage1L1Trigger
-stage1L1Trigger.toModify(l1TdeRCT, rctSourceData = 'caloStage1Digis')
-stage1L1Trigger.toModify(l1TdeRCTfromRCT, rctSourceData = 'rctDigis')
-stage1L1Trigger.toModify(l1tRct, rctSource = 'caloStage1Digis')
-stage1L1Trigger.toModify(l1tRctfromRCT, rctSource = 'rctDigis')
-stage1L1Trigger.toModify(l1tPUM, regionSource = cms.InputTag("rctDigis"))
+stage1L1Trigger.toModify(RunIl1TdeRCT, rctSourceData = 'caloStage1Digis')
+stage1L1Trigger.toModify(RunIl1TdeRCTfromRCT, rctSourceData = 'rctDigis')
+stage1L1Trigger.toModify(RunIl1tRct, rctSource = 'caloStage1Digis')
+stage1L1Trigger.toModify(RunIl1tRctfromRCT, rctSource = 'rctDigis')
+stage1L1Trigger.toModify(RunIl1tPUM, regionSource = cms.InputTag("rctDigis"))
 
-stage1L1Trigger.toModify(l1tStage1Layer2, stage1_layer2_ = cms.bool(True))
-stage1L1Trigger.toModify(l1tStage1Layer2, gctCentralJetsSource = cms.InputTag("caloStage1LegacyFormatDigis","cenJets"))
-stage1L1Trigger.toModify(l1tStage1Layer2, gctForwardJetsSource = cms.InputTag("caloStage1LegacyFormatDigis","forJets"))
-stage1L1Trigger.toModify(l1tStage1Layer2, gctTauJetsSource = cms.InputTag("caloStage1LegacyFormatDigis","tauJets"))
-stage1L1Trigger.toModify(l1tStage1Layer2, gctIsoTauJetsSource = cms.InputTag("caloStage1LegacyFormatDigis","isoTauJets"))
-stage1L1Trigger.toModify(l1tStage1Layer2, gctEnergySumsSource = cms.InputTag("caloStage1LegacyFormatDigis"))
-stage1L1Trigger.toModify(l1tStage1Layer2, gctIsoEmSource = cms.InputTag("caloStage1LegacyFormatDigis","isoEm"))
-stage1L1Trigger.toModify(l1tStage1Layer2, gctNonIsoEmSource = cms.InputTag("caloStage1LegacyFormatDigis","nonIsoEm"))
+stage1L1Trigger.toModify(RunIl1tStage1Layer2, stage1_layer2_ = cms.bool(True))
+stage1L1Trigger.toModify(RunIl1tStage1Layer2, gctCentralJetsSource = cms.InputTag("caloStage1LegacyFormatDigis","cenJets"))
+stage1L1Trigger.toModify(RunIl1tStage1Layer2, gctForwardJetsSource = cms.InputTag("caloStage1LegacyFormatDigis","forJets"))
+stage1L1Trigger.toModify(RunIl1tStage1Layer2, gctTauJetsSource = cms.InputTag("caloStage1LegacyFormatDigis","tauJets"))
+stage1L1Trigger.toModify(RunIl1tStage1Layer2, gctIsoTauJetsSource = cms.InputTag("caloStage1LegacyFormatDigis","isoTauJets"))
+stage1L1Trigger.toModify(RunIl1tStage1Layer2, gctEnergySumsSource = cms.InputTag("caloStage1LegacyFormatDigis"))
+stage1L1Trigger.toModify(RunIl1tStage1Layer2, gctIsoEmSource = cms.InputTag("caloStage1LegacyFormatDigis","isoEm"))
+stage1L1Trigger.toModify(RunIl1tStage1Layer2, gctNonIsoEmSource = cms.InputTag("caloStage1LegacyFormatDigis","nonIsoEm"))
 
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, etTotalSource = cms.InputTag("caloStage1LegacyFormatDigis") )
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, nonIsolatedEmSource = cms.InputTag("caloStage1LegacyFormatDigis","nonIsoEm") )
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, etMissSource = cms.InputTag("caloStage1LegacyFormatDigis") )
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, htMissSource = cms.InputTag("caloStage1LegacyFormatDigis") )
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, forwardJetSource = cms.InputTag("caloStage1LegacyFormatDigis","forJets") )
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, centralJetSource = cms.InputTag("caloStage1LegacyFormatDigis","cenJets") )
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, tauJetSource = cms.InputTag("caloStage1LegacyFormatDigis","tauJets") )
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, isoTauJetSource = cms.InputTag("caloStage1LegacyFormatDigis","isoTauJets") )
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, isolatedEmSource = cms.InputTag("caloStage1LegacyFormatDigis","isoEm") )
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, etHadSource = cms.InputTag("caloStage1LegacyFormatDigis") )
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, hfRingEtSumsSource = cms.InputTag("caloStage1LegacyFormatDigis") )
-stage1L1Trigger.toModify( dqmL1ExtraParticlesStage1, hfRingBitCountsSource = cms.InputTag("caloStage1LegacyFormatDigis") )
-stage1L1Trigger.toModify( l1ExtraDQMStage1, stage1_layer2_ = cms.bool(True))
-stage1L1Trigger.toModify( l1ExtraDQMStage1, L1ExtraIsoTauJetSource_ = cms.InputTag("dqmL1ExtraParticlesStage1", "IsoTau"))
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, etTotalSource = cms.InputTag("caloStage1LegacyFormatDigis") )
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, nonIsolatedEmSource = cms.InputTag("caloStage1LegacyFormatDigis","nonIsoEm") )
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, etMissSource = cms.InputTag("caloStage1LegacyFormatDigis") )
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, htMissSource = cms.InputTag("caloStage1LegacyFormatDigis") )
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, forwardJetSource = cms.InputTag("caloStage1LegacyFormatDigis","forJets") )
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, centralJetSource = cms.InputTag("caloStage1LegacyFormatDigis","cenJets") )
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, tauJetSource = cms.InputTag("caloStage1LegacyFormatDigis","tauJets") )
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, isoTauJetSource = cms.InputTag("caloStage1LegacyFormatDigis","isoTauJets") )
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, isolatedEmSource = cms.InputTag("caloStage1LegacyFormatDigis","isoEm") )
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, etHadSource = cms.InputTag("caloStage1LegacyFormatDigis") )
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, hfRingEtSumsSource = cms.InputTag("caloStage1LegacyFormatDigis") )
+stage1L1Trigger.toModify( RunIdqmL1ExtraParticlesStage1, hfRingBitCountsSource = cms.InputTag("caloStage1LegacyFormatDigis") )
+stage1L1Trigger.toModify( RunIl1ExtraDQMStage1, stage1_layer2_ = cms.bool(True))
+stage1L1Trigger.toModify( RunIl1ExtraDQMStage1, L1ExtraIsoTauJetSource_ = cms.InputTag("dqmL1ExtraParticlesStage1", "IsoTau"))
 
-stage1L1Trigger.toModify(l1compareforstage1, GCTsourceData = cms.InputTag("caloStage1LegacyFormatDigis"))
-stage1L1Trigger.toModify(l1compareforstage1, GCTsourceEmul = cms.InputTag("valCaloStage1LegacyFormatDigis"))
-stage1L1Trigger.toModify(l1compareforstage1, stage1_layer2_ = cms.bool(True))
+stage1L1Trigger.toModify(RunIl1compareforstage1, GCTsourceData = cms.InputTag("caloStage1LegacyFormatDigis"))
+stage1L1Trigger.toModify(RunIl1compareforstage1, GCTsourceEmul = cms.InputTag("valCaloStage1LegacyFormatDigis"))
+stage1L1Trigger.toModify(RunIl1compareforstage1, stage1_layer2_ = cms.bool(True))
 
-stage1L1Trigger.toModify(valStage1GtDigis, GctInputTag = 'caloStage1LegacyFormatDigis')
+stage1L1Trigger.toModify(RunIvalStage1GtDigis, GctInputTag = 'caloStage1LegacyFormatDigis')
 
 #
 # define sequences 
 #
 
+
 l1TriggerOnline = cms.Sequence(
                                l1tMonitorStage1Online
                                 * dqmEnvL1T
                                )
+l1TriggerOnline.replace(l1tRct,RunIl1tRct)
+l1TriggerOnline.replace(l1tRctfromRCT,RunIl1tRctfromRCT)
+l1TriggerOnline.replace(l1tPUM,RunIl1tPUM)
+l1TriggerOnline.replace(l1tStage1Layer2,RunIl1tStage1Layer2)
+l1TriggerOnline.replace(dqmL1ExtraParticlesStage1,RunIdqmL1ExtraParticlesStage1)
+l1TriggerOnline.replace(l1ExtraDQMStage1,RunIl1ExtraDQMStage1)
                                     
 l1TriggerOffline = cms.Sequence(
                                 l1TriggerOnline
@@ -140,11 +166,14 @@ l1TriggerOffline = cms.Sequence(
                                 )
  
 #
- 
 l1TriggerEmulatorOnline = cms.Sequence(
                                 l1Stage1HwValEmulatorMonitor
                                 * dqmEnvL1TEMU
                                 )
+l1TriggerEmulatorOnline.replace(l1TdeRCT,RunIl1TdeRCT)
+l1TriggerEmulatorOnline.replace(l1TdeRCTfromRCT,RunIl1TdeRCTfromRCT)
+l1TriggerEmulatorOnline.replace(l1TdeStage1Layer2,RunIl1TdeStage1Layer2)
+l1TriggerEmulatorOnline.replace(l1Stage1GtHwValidation,RunIl1Stage1GtHwValidation)
 
 l1TriggerEmulatorOffline = cms.Sequence(
                                 l1TriggerEmulatorOnline                                
@@ -180,73 +209,7 @@ l1TriggerDqmOfflineClient = cms.Sequence(
 # L1TSync - FIXME - same problems as L1TRate
 
 
-# DQM first step 
-#
-
-#l1TriggerDqmOffline.remove(l1TriggerOffline) 
-#l1TriggerDqmOffline.remove(l1TriggerEmulatorOffline) 
-
-#
-
-#l1TriggerOffline.remove(l1TriggerOnline)
-
-
-# l1tMonitorOnline sequence, defined in DQM/L1TMonitor/python/L1TMonitor_cff.py
-#
-#l1TriggerOnline.remove(l1tMonitorOnline)
 #
 l1tMonitorStage1Online.remove(bxTiming)
-#l1tMonitorOnline.remove(l1tDttf)
-#l1tMonitorOnline.remove(l1tCsctf) 
-#l1tMonitorOnline.remove(l1tRpctf)
-#l1tMonitorOnline.remove(l1tGmt)
-#l1tMonitorOnline.remove(l1tGt) 
-#
-#l1ExtraDqmSeq.remove(dqmGctDigis)
-#l1ExtraDqmSeq.remove(dqmGtDigis)
-#l1ExtraDqmSeq.remove(dqmL1ExtraParticles)
-#l1ExtraDqmSeq.remove(l1ExtraDQM)
-#l1tMonitorOnline.remove(l1ExtraDqmSeq)
-#
-#l1tMonitorOnline.remove(l1tRate)
-#l1tMonitorOnline.remove(l1tBPTX)
-#l1tMonitorOnline.remove(l1tRctSeq)
-#l1tMonitorOnline.remove(l1tGctSeq)
-
-#
-
-#l1TriggerEmulatorOffline.remove(l1TriggerEmulatorOnline)
-
-# l1HwValEmulatorMonitor sequence, defined in DQM/L1TMonitor/python/L1TEmulatorMonitor_cff.py 
-#
-#l1TriggerEmulatorOnline.remove(l1HwValEmulatorMonitor) 
-
-# L1HardwareValidation producers
-#l1HwValEmulatorMonitor.remove(L1HardwareValidation)
-#
-#l1HwValEmulatorMonitor.remove(l1EmulatorMonitor)
-
-#l1TriggerDqmOfflineClient.remove(l1tMonitorClient)
-#l1TriggerDqmOfflineClient.remove(l1EmulatorMonitorClient)
-
-# l1tMonitorClient sequence, defined in DQM/L1TMonitorClient/python/L1TMonitorClient_cff.py
-#
-#l1tMonitorClient.remove(l1TriggerQualityTests)
-#l1tMonitorClient.remove(l1TriggerClients)
-
-# l1TriggerClients sequence, part of l1tMonitorClient sequence
-
-#l1TriggerClients.remove(l1tGctClient)
-#l1TriggerClients.remove(l1tDttfClient)
-#l1TriggerClients.remove(l1tCsctfClient) 
-#l1TriggerClients.remove(l1tRpctfClient)
-#l1TriggerClients.remove(l1tGmtClient)
-#l1TriggerClients.remove(l1tOccupancyClient)
 l1TriggerStage1Clients.remove(l1tTestsSummary)
-#l1TriggerClients.remove(l1tEventInfoClient)
-                              
-# l1EmulatorMonitorClient sequence, defined in DQM/L1TMonitorClient/python/L1TEMUMonitorClient_cff.py
-#
-#l1EmulatorMonitorClient.remove(l1EmulatorQualityTests)
 l1EmulatorMonitorClient.remove(l1EmulatorErrorFlagClient)
-#l1EmulatorMonitorClient.remove(l1EmulatorEventInfoClient)

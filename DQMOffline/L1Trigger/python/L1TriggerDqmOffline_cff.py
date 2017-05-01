@@ -32,10 +32,12 @@ from L1Trigger.L1TCalorimeter.hackConditions_cff import *
 from DQM.L1TMonitor.L1TMonitor_cff import *
 
 from DQMOffline.L1Trigger.L1TStage2CaloLayer2Offline_cfi import *
-l1tStage2CaloLayer2OfflineDQMEmu.stage2CaloLayer2JetSource=cms.InputTag("valCaloStage2Layer2Digis")
-l1tStage2CaloLayer2OfflineDQMEmu.stage2CaloLayer2EtSumSource=cms.InputTag("valCaloStage2Layer2Digis")
+RunIIl1tStage2CaloLayer2OfflineDQMEmu = l1tStage2CaloLayer2OfflineDQMEmu.clone()
+RunIIl1tStage2CaloLayer2OfflineDQMEmu.stage2CaloLayer2JetSource=cms.InputTag("valCaloStage2Layer2Digis")
+RunIIl1tStage2CaloLayer2OfflineDQMEmu.stage2CaloLayer2EtSumSource=cms.InputTag("valCaloStage2Layer2Digis")
 from DQMOffline.L1Trigger.L1TEGammaOffline_cfi import *
-l1tEGammaOfflineDQMEmu.stage2CaloLayer2EGammaSource=cms.InputTag("valCaloStage2Layer2Digis")
+RunIIl1tEGammaOfflineDQMEmu = l1tEGammaOfflineDQMEmu.clone()
+RunIIl1tEGammaOfflineDQMEmu.stage2CaloLayer2EGammaSource=cms.InputTag("valCaloStage2Layer2Digis")
 
 
 # DQM Offline Step 2 cfi/cff imports
@@ -132,8 +134,8 @@ Stage2l1TriggerEmulatorOnline = cms.Sequence(
 
 Stage2l1TriggerEmulatorOffline = cms.Sequence(
                                 Stage2l1TriggerEmulatorOnline +
-                                l1tStage2CaloLayer2OfflineDQMEmu +
-                                l1tEGammaOfflineDQMEmu
+                                RunIIl1tStage2CaloLayer2OfflineDQMEmu +
+                                RunIIl1tEGammaOfflineDQMEmu
                                 )
 
 #
