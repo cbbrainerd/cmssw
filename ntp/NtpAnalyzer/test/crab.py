@@ -67,6 +67,7 @@ if (command=="submit"):
     print 'Now executing python submit_interactive.py'
     subprocess.Popen("python submit_interactive.py",shell=True)
     raise SystemExit
+
 print "Git hashes of given submits: %s." % lastHash
 print "Running command `crab %s%s` on %s." % (command,' '+' '.join(crabCmdOpts) if crabCmdOpts else '',("MC and Data" if (isMC and isData) else ("MC" if isMC else ("Data" if isData else "nothing."))))
 
@@ -79,9 +80,26 @@ if __name__ == '__main__':
     from httplib import HTTPException
     
     def job(directory,command,crabCmdOpts):
-        print 'Running command "crab %s%s":' % ((command+" -d "+directory),' '+' '.join(crabCmdOpts) if crabCmdOpts else '')
+        if(command=="retrieve"):
+            print 'Retrieving output.'
+            from CRABClient.UserUtilities import getUsernameFromSiteDB
+            datasetName=''
+            with open(directory+"/crab.log") as f:
+                for x in f:
+                    if "config.Data.inputDataset" in x:
+                        datasetName=x.split("/",2)[1]
+                        break
+            if not datasetName:
+                return
+            jobName=directory.split("_",1)[1]
+            dirBase= '/store/user/%s/%s/%s/' % (getUsernameFromSiteDB(),datasetName,jobName)
+            from os import spawnlp,P_NOWAIT
+            pid=spawnlp(P_NOWAIT,"./getFiles.sh","%s.root" % (jobName), dirBase)
+            print pid
+            return
+        print 'Running command "crab %s%s":' % ((command+" --dir "+directory),' '+' '.join(crabCmdOpts) if crabCmdOpts else '')
         try:
-            crabCommand(command,d=directory,*crabCmdOpts)
+            crabCommand(command,dir=directory,*crabCmdOpts)
         except HTTPException as hte:
             print "Failed submitting task: %s" % (hte.headers)
         except ClientException as cle:

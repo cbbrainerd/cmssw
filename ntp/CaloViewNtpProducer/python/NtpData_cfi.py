@@ -17,7 +17,7 @@ process.source = cms.Source("PoolSource",
 #        'root://cmsxrootd.fnal.gov//store/mc/RunIISpring16DR80/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/ALCARECO/StreamALCACombined-PUSpring16_ALCA_Peak_TkAlZMuMu_80X_mcRun2_asymptotic_2016_peak_v0-v1/00000/00D55FCC-AF3E-E611-929C-0CC47A78A468.root' 
 #        '/DoubleMuon/Run2016E-PromptReco-v2/RECO'
 #        '/store/data/Run2016E/DoubleMuon/RECO/PromptReco-v2/000/276/830/00000/0EA25E84-AB4C-E611-B14B-02163E01431D.root'
-#         'file://./DataTestFile.root'
+         'file://./DataTestFile.root'
     )
 )
 
@@ -31,6 +31,8 @@ process.ntptow=ntp.ntptow
 
 process.ntpmu=ntp.ntpmu
 
-process.p = cms.Path(process.ntpmu*process.ntptow)
-process.output=cms.OutputModule("PoolOutputModule",fileName=cms.untracked.string("file:NtpData.root"),SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring('p')),outputCommands=cms.untracked.vstring('keep *_*_*_ntupler','keep *_TriggerResults_*_*'),dropMetaData=cms.untracked.string('ALL'))
+process.ntpjet=ntp.ntpjet
+
+process.p = cms.Path(process.ntpmu*process.ntptow*ntp.ntpjet)
+process.output=cms.OutputModule("PoolOutputModule",fileName=cms.untracked.string("file:NtpData.root"),SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring('p')),outputCommands=cms.untracked.vstring('keep *_*_*_ntupler','keep *_TriggerResults_*_HLT'),dropMetaData=cms.untracked.string('ALL'))
 process.out=cms.EndPath(process.output)

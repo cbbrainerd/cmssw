@@ -42,3 +42,18 @@ ntpmu=cms.EDProducer("MuonViewNtpProducer",
             Ctype=cms.untracked.string("unsignedint"))
     )
 )
+
+ntpjet=cms.EDProducer("JetViewNtpProducer",
+    src=cms.InputTag("ak4CaloJets"),
+    variables=cms.VPSet(
+        cms.PSet(tag=cms.untracked.string("jetEta"),
+            quantity=cms.untracked.string("eta"),
+            Ctype=cms.untracked.string("double")),
+        cms.PSet(tag=cms.untracked.string("jetPt"),
+            quantity=cms.untracked.string("pt"),
+            Ctype=cms.untracked.string("double")),
+        cms.PSet(tag=cms.untracked.string("jetPhi"),
+            quantity=cms.untracked.string("phi"),
+            Ctype=cms.untracked.string("double"))
+    )
+)

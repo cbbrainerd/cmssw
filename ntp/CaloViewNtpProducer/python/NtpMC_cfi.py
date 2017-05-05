@@ -47,6 +47,8 @@ process.ntptow=ntp.ntptow
 
 process.ntpmu=ntp.ntpmu
 
+process.ntpjet=ntp.ntpjet
+
 # Output definition
 
 
@@ -57,8 +59,8 @@ process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_v14', ''
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.reconstruction_step = cms.Path(process.reconstruction)
 
-process.p = cms.Path(process.ntpmu*process.ntptow)
-process.output=cms.OutputModule("PoolOutputModule",fileName=cms.untracked.string("file:NtpMC.root"),SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring('p')),outputCommands=cms.untracked.vstring('keep *_ntpmu_*_ntupler','keep *_ntptow_*_ntupler','keep *_TriggerResults_*_*'),dropMetaData=cms.untracked.string('ALL'))
+process.p = cms.Path(process.ntpmu*process.ntptow*process.ntpjet)
+process.output=cms.OutputModule("PoolOutputModule",fileName=cms.untracked.string("file:NtpMC.root"),SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring('p')),outputCommands=cms.untracked.vstring('keep *_ntpmu_*_ntupler','keep *_ntpjet_*_ntupler','keep *_ntptow_*_ntupler','keep *_TriggerResults_*_HLT'),dropMetaData=cms.untracked.string('ALL'))
 process.out=cms.EndPath(process.output)
 
 process.schedule=cms.Schedule(process.raw2digi_step,process.reconstruction_step,process.p,process.out)

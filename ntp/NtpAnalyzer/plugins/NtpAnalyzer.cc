@@ -183,7 +183,7 @@ NtpAnalyzer::NtpAnalyzer(const edm::ParameterSet& iConfig) :
    numberCaloTowers_=fs->make<TH1D>("numberCaloTowers_","Number of Calo Towers per Event",5001,-.5,5000.5);
    etSumInvariantMassOS_=fs->make<TH2D>("etSumInvariantMassOS_","Et Sum vs Invariant Mass",5000,0,1000,1000,0,200);
    etSumInvariantMassSS_=fs->make<TH2D>("etSumInvariantMassSS_","Et Sum vs Invariant Mass",5000,0,1000,1000,0,200);
-   information_=fs->make<TH1I>("information_","Nv4. Cuts: Both muons loose, pT>10GeV, |eta|<2.4. Exactly TWO muons",1,0,1);
+   information_=fs->make<TH1I>("information_","Nv6. Cuts: Both muons loose, pT>20GeV, |eta|<2.4. Exactly TWO muons",1,0,1);
    for(unsigned int i : availableRunNumbers) {
         std::string tmp=std::to_string(i);
         const char* name=tmp.c_str();
@@ -278,6 +278,8 @@ NtpAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    if(numLooseMuons == 2) { //Events with EXACTLY 2 muons
 /*        if(looseMuons[0].pt < 10 && looseMuons[1].pt < 10)
             return; */
+        if (looseMuons[0].pt < 20 || looseMuons[1].pt < 20)
+            return;
         double etSum=0;
         for(int i=0;i!=numCaloTowers;++i) {
             etSum+=(*emEt_)[i];
