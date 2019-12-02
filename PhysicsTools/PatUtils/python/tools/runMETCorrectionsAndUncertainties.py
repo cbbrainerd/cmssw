@@ -455,8 +455,8 @@ class RunMETCorrectionsAndUncertainties(ConfigToolBase):
         fullPatMetSequence += getattr(process, "patShiftedModuleSequence"+postfix)
         
         #adding the slimmed MET
-        if hasattr(process, "patCaloMet"):
-            fullPatMetSequence +=getattr(process, "patCaloMet")
+        if hasattr(process, "patCaloMet"+postfix):
+            fullPatMetSequence +=getattr(process, "patCaloMet"+postfix)
         if hasattr(process, "slimmedMETs"+postfix):
             fullPatMetSequence +=getattr(process, "slimmedMETs"+postfix)
 
@@ -622,8 +622,8 @@ class RunMETCorrectionsAndUncertainties(ConfigToolBase):
             getattr(process, "patMETs"+postfix).computeMETSignificance = cms.bool(self._parameters["computeMETSignificance"].value)
             getattr(process, "patMETs"+postfix).srcPFCands=self._parameters["pfCandCollection"].value
 
-        if hasattr(process, "patCaloMet"):
-            getattr(process, "patCaloMet").computeMETSignificance = cms.bool(False)
+        if hasattr(process, "patCaloMet"+postfix):
+            getattr(process, "patCaloMet"+postfix).computeMETSignificance = cms.bool(False)
 
         task = getPatAlgosToolsTask(process)
 
@@ -1556,10 +1556,10 @@ class RunMETCorrectionsAndUncertainties(ConfigToolBase):
             caloMetName="metrawCalo" if hasattr(process,"metrawCalo") else "metrawCalo"+postfix
             from PhysicsTools.PatAlgos.tools.metTools import addMETCollection
             addMETCollection(process,
-                             labelName = "patCaloMet",
+                             labelName = "patCaloMet"+postfix,
                              metSource = caloMetName
                              )
-            getattr(process,"patCaloMet").addGenMET = False
+            getattr(process,"patCaloMet"+postfix).addGenMET = False
 
             ##adding the necessary chs and track met configuration
             task = getPatAlgosToolsTask(process)
@@ -1660,7 +1660,7 @@ class RunMETCorrectionsAndUncertainties(ConfigToolBase):
 
             getattr(process,"slimmedMETs"+postfix).runningOnMiniAOD = True
             getattr(process,"slimmedMETs"+postfix).t01Variation = cms.InputTag("slimmedMETs" if not self._parameters["Puppi"].value else "slimmedMETsPuppi",processName=cms.InputTag.skipCurrentProcess())
-         
+            getattr(process,"slimmedMETs"+postfix).caloMET=cms.InputTag("patCaloMet"+postfix)
 
             #smearing and type0 variations not yet supported in reprocessing
             #del getattr(process,"slimmedMETs"+postfix).t1SmearedVarsAndUncs
